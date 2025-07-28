@@ -42,16 +42,17 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(loginDTO.password, user.password);
     if (!isPasswordValid) throw new BadRequestException('Invalid password');
 
-    const bothTokens = {
-      accessToken: await this.generateAccessToken(user),
-      refreshToken: await this.generateRefreshToken(user)
-    }
+    
+    const accessToken = await this.generateAccessToken(user);
+    const refreshToken = await this.generateRefreshToken(user);
+    
 
     const {password, ...rest} = user;
 
     return {
       ...rest,
-      tokens: bothTokens
+      accessToken,
+      refreshToken
     };
   }
 
@@ -71,12 +72,13 @@ export class AuthService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    const token = {
-      accessToken: await this.generateAccessToken(user),
-      refreshToken: await this.generateRefreshToken(user)
-    }
+    const accessToken = await this.generateAccessToken(user);
+    const newRefreshToken = await this.generateRefreshToken(user);
 
-    return token;
+    return {
+      accessToken,
+      refreshToken: newRefreshToken
+    };
   }
 
   async findUserById(id: string): Promise<UserResponseDto | null> {

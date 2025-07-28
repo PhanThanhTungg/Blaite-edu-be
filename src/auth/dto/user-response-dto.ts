@@ -60,8 +60,8 @@ export class UserResponseDto {
   lastActiveDate?: Date;
 
   @IsOptional()
-  tokens?: {
-    accessToken: string;
-    refreshToken: string;
-  };
+  accessToken?: string;
+
+  @IsOptional()
+  refreshToken?: string;
 }

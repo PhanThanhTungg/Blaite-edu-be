@@ -23,6 +23,5 @@ Content-Type: application/json
 POST {{url}}/auth/refresh
 Content-Type: application/json
 
-{
-  "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImlhdCI6MTc1MzUxOTY0OSwiZXhwIjoxNzU0MTI0NDQ5fQ.CRSWO6YD6deB6zWz_Hjwsb37zrMdNPZ_2nD35rxSxR4"
-}
+### logout
+POST {{url}}/auth/logout
