@@ -3,6 +3,12 @@
 @AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiN2U3YjcyOGMtZTYyNC00NjRkLThhNDQtYjQ2ZGNlOTA2MTdjIiwiaWF0IjoxNzUzNzIwNTQ3LCJleHAiOjE3NTM4MDY5NDd9.Ei6oQqql_Q9n30KSAEIwvU83a7Dp6Xo9EzIK_o450Y0
 
 
+### get a topic by id
+GET {{url}}/topics/b7bb1025-b2a5-4a2c-9ad7-260c04169d49
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+
 ### get all topics
 GET {{url}}/topics
 Content-Type: application/json

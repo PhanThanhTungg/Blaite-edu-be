@@ -11,6 +11,16 @@ import { EditTopicDto } from './dto/edit-topic.dto';
 export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 
+  // GET: /topics/:id
+  @Get(':id')
+  async getTopic(
+    @Param('id') topicId: string,
+    @CurrentUser() user: User
+  ) : Promise<Topic> {
+    return this.topicsService.getTopic(topicId, user.id);
+  }
+
+
   // GET: /topics
   @Get()
   async getTopics(

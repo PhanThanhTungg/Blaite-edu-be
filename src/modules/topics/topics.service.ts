@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { PrismaClient, Topic } from 'generated/prisma';
 import { EditTopicDto } from './dto/edit-topic.dto';
@@ -9,6 +9,18 @@ export class TopicsService {
   constructor() {
     this.prisma = new PrismaClient();
   }
+
+
+  async getTopic(topicId: string, userId: string): Promise<Topic> {
+    const topic = await this.prisma.topic.findUnique({
+      where: { id: topicId, userId: userId },
+    });
+    if (!topic) {
+      throw new NotFoundException('Topic not found');
+    }
+    return topic;
+  }
+
 
   async getTopics(userId: string): Promise<Topic[]> {
     const topics = await this.prisma.topic.findMany({
