@@ -25,7 +25,7 @@ model User {
   name           String?
   avatarUrl      String?
   phone          String?
-  timezone       String     @default("Asia/Ho_Chi_Minh")
+  timezone       String     @default("UTC")
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   prompt         String?
@@ -88,7 +88,7 @@ model Activity {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   date      DateTime
-  timezone  String   @default("Asia/Ho_Chi_Minh")
+  timezone  String   @default("UTC")
   count     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

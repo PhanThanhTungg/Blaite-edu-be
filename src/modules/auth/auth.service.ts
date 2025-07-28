@@ -18,7 +18,7 @@ export class AuthService {
     this.prisma = new PrismaClient();
   }
   
-  async register(registerDTO: RegisterDto): Promise<UserResponseDto> {
+  async register(registerDTO: RegisterDto, timezone: string): Promise<UserResponseDto> {
     const userFound = await this.findUserByEmail(registerDTO.email);
     if(userFound) throw new BadRequestException('Email already exists');
     const newUser = await this.prisma.user.create({
@@ -27,6 +27,7 @@ export class AuthService {
         email: registerDTO.email,
         name: registerDTO.name,
         password: await bcrypt.hash(registerDTO.password, 10),
+        timezone: timezone
       },
     });
 

@@ -17,9 +17,11 @@ export class AuthController {
   // POST: /auth/register
   @Post('register')
   async register(
-    @Body() registerDTO: RegisterDto
+    @Body() registerDTO: RegisterDto,
+    @Req() req: Request
   ): Promise<UserResponseDto> {
-    return this.authService.register(registerDTO);
+    const timezone = req.headers['x-timezone'] as string || 'UTC';
+    return this.authService.register(registerDTO, timezone);
   }
 
   // POST: /auth/login
