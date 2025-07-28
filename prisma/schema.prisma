@@ -7,3 +7,133 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id             String     @id @default(uuid())
+  telegramId     String?    @unique
+  clerkUserId    String     @unique
+  name           String?
+  avatarUrl      String?
+  email          String?    @unique
+  phone          String?
+  timezone       String     @default("Asia/Ho_Chi_Minh")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  prompt         String?
+  topics         Topic[]
+  activities     Activity[]
+  streak         Int?       @default(0)
+  lastActiveDate DateTime?
+
+  @@map("users")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  phone     String   @unique
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+
+  @@map("admins")
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  name      String
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  admins    Admin[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id        String   @id @default(uuid())
+  name      String
+  description String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rolePermissions RolePermission[]
+  @@map("permissions")
+}
+
+model RolePermission {
+  id        String   @id @default(uuid())
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  permissionId String
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@map("role_permissions")
+}
+
+model Topic {
+  id          String      @id @default(uuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  name        String
+  description String?
+  prompt      String?
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+  knowledges  Knowledge[]
+  questions   Question[]
+
+  @@map("topics")
+}
+
+model Knowledge {
+  id        String     @id @default(uuid())
+  topicId   String
+  topic     Topic      @relation(fields: [topicId], references: [id])
+  content   String
+  reviewAt  DateTime?  
+  avgScore  Int        @default(0) 
+  createdAt DateTime   @default(now()) 
+  updatedAt DateTime   @updatedAt 
+  questions Question[]
+
+  @@map("knowledges")
+}
+
+model Question {
+  id          String     @id @default(uuid())
+  messageId   String?
+  knowledgeId String?
+  knowledge   Knowledge? @relation(fields: [knowledgeId], references: [id])
+  content     String
+  answer      String?
+  score       Int?
+  aiFeedback  String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Topic       Topic?     @relation(fields: [topicId], references: [id])
+  topicId     String?
+
+  @@map("questions")
+}
+
+model Activity {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime
+  timezone  String   @default("Asia/Ho_Chi_Minh")
+  count     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date, timezone])
+  @@map("activities")
+}
