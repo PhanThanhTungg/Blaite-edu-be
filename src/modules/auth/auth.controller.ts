@@ -3,7 +3,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { UserResponseDto } from './dto/user-response-dto';
 import { LoginDto } from './dto/login.dto';
-import { LoginThrottlerGuard } from './guards/login-throttler.guard';
+import { LoginThrottlerGuard } from '../../common/guards/login-throttler.guard';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 
