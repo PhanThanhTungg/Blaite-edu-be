@@ -1,0 +1,36 @@
+@url = http://localhost:3001
+
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiN2U3YjcyOGMtZTYyNC00NjRkLThhNDQtYjQ2ZGNlOTA2MTdjIiwiaWF0IjoxNzUzNzIwNTQ3LCJleHAiOjE3NTM4MDY5NDd9.Ei6oQqql_Q9n30KSAEIwvU83a7Dp6Xo9EzIK_o450Y0
+
+
+### get all topics
+GET {{url}}/topics
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+### create a new topic
+POST {{url}}/topics
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "name": "Toán nâng cao",
+  "description": "Học toán nâng cao",
+  "prompt":"Hãy giúp tôi học toán nâng cao"
+}
+
+### edit a topic
+PATCH {{url}}/topics/b86f20e5-816a-4541-b1a8-8ccd286b27c5
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "name": "Toán cơ bản"
+}
+
+### delete a topic
+DELETE {{url}}/topics/b86f20e5-816a-4541-b1a8-8ccd286b27c5
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+

@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
-import { TopicsModule } from './topics/topics.module';
+import { TopicsModule } from './modules/topics/topics.module';
 
 @Module({
   imports: [

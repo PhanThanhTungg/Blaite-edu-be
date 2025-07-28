@@ -50,6 +50,7 @@ export class AuthController {
     };
   }
 
+  // POST: /auth/logout
   @Post('logout')
   async logout(
     @Res({passthrough: true}) res: Response
