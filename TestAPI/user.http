@@ -1,0 +1,28 @@
+@url = http://localhost:3001
+
+### Register a new user
+POST {{url}}/auth/register
+Content-Type: application/json
+
+{
+  "email":"tuttuxytin@gmail.com",
+  "password":"123456",
+  "name":"Tung"
+}
+
+### Login a user
+POST {{url}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"tuttuxytin@gmail.com",
+  "password":"123456"
+}
+
+### refresh token
+POST {{url}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYsImlhdCI6MTc1MzUxOTY0OSwiZXhwIjoxNzU0MTI0NDQ5fQ.CRSWO6YD6deB6zWz_Hjwsb37zrMdNPZ_2nD35rxSxR4"
+}

@@ -8,13 +8,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TypeAuth {
+  account
+  google
+  facebook
+}
+
 model User {
   id             String     @id @default(uuid())
+  typeAuth       TypeAuth   @default(account)
+  googleId       String?    @unique
+  facebookId     String?    @unique
+  email          String?    @unique
+  password       String?
   telegramId     String?    @unique
-  clerkUserId    String     @unique
   name           String?
   avatarUrl      String?
-  email          String?    @unique
   phone          String?
   timezone       String     @default("Asia/Ho_Chi_Minh")
   createdAt      DateTime   @default(now())
@@ -26,56 +35,6 @@ model User {
   lastActiveDate DateTime?
 
   @@map("users")
-}
-
-model Admin {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  phone     String   @unique
-  name      String
-  avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  roleId    String
-  role      Role     @relation(fields: [roleId], references: [id])
-
-  @@map("admins")
-}
-
-model Role {
-  id        String   @id @default(uuid())
-  name      String
-  description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  admins    Admin[]
-  permissions RolePermission[]
-
-  @@map("roles")
-}
-
-model Permission {
-  id        String   @id @default(uuid())
-  name      String
-  description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  rolePermissions RolePermission[]
-  @@map("permissions")
-}
-
-model RolePermission {
-  id        String   @id @default(uuid())
-  roleId    String
-  role      Role     @relation(fields: [roleId], references: [id])
-  permissionId String
-  permission Permission @relation(fields: [permissionId], references: [id])
-
-  @@map("role_permissions")
 }
 
 model Topic {
