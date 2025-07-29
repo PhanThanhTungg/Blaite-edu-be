@@ -10,10 +10,36 @@ export class KnowledgesService {
     this.prisma = new PrismaClient();
   }
 
+  async getOneKnowledge(knowledgeId: string, userId: string): Promise<Knowledge> {
+    const knowledge = await this.prisma.knowledge.findUnique({
+      where: { 
+        id: knowledgeId,
+        topic: { userId: userId }
+      }
+    });
+    
+    if(!knowledge) throw new NotFoundException("Knowledge not found");
+
+    return knowledge;
+  }
+
+  async getKnowledgesOfTopic(topicId: string, userId: string): Promise<Knowledge[]> {
+    const isUser = await this.checkKnowledgesUser(userId, topicId);
+
+    if (!isUser) throw new NotFoundException("Topic not found");
+
+    const knowledges = await this.prisma.knowledge.findMany({
+      where: { topicId: topicId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    return knowledges;
+  }
+
   async createKnowledge(knowledge: CreateKnowledgeDto, userId: string): Promise<Knowledge> {
     const isUser = await this.checkKnowledgesUser(userId, knowledge.topicId);
 
-    if(!isUser) throw new NotFoundException("Topic not found");
+    if (!isUser) throw new NotFoundException("Topic not found");
 
     const newKnowledge = await this.prisma.knowledge.create({
       data: knowledge
@@ -42,16 +68,15 @@ export class KnowledgesService {
     return deletedKnowledge;
   }
 
-  private async checkKnowledge(knowledgeId: string, userId: string): Promise<void>{
+  private async checkKnowledge(knowledgeId: string, userId: string): Promise<void> {
     const knowledge = await this.prisma.knowledge.findUnique({
-      where: { id: knowledgeId }
+      where: { 
+        id: knowledgeId,
+        topic: { userId: userId }
+      }
     });
-    
-    if(!knowledge) throw new NotFoundException("Knowledge not found");
 
-    const isUser = await this.checkKnowledgesUser(userId, knowledge.topicId);
-
-    if(!isUser) throw new NotFoundException("Topic not found");
+    if (!knowledge) throw new NotFoundException("Knowledge not found");
   }
 
   private async checkKnowledgesUser(userId: string, topicId: string): Promise<boolean> {

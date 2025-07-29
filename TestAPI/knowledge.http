@@ -2,6 +2,20 @@
 
 @AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiMjMzYWM3OTItYmMyNi00MDlhLTkwYmYtNTZkODM0OTQzZmJhIiwiaWF0IjoxNzUzNzYxMjg4LCJleHAiOjE3NTM4NDc2ODh9.nv0F8vkDzAyw9yRnk9UNPO5b7AZrsB_NIg3tXTsbfEE
 
+
+
+### get one knowledge by id
+GET {{url}}/knowledges/detail/502db7c2-f9a1-4ebf-b44d-60ae8763c87a
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+
+### get a knowledge of topic by id
+GET {{url}}/knowledges/topic/9e72585b-9455-4979-ac2b-26c1edb2a412
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+
 ### create a new knowledge 
 POST {{url}}/knowledges
 Content-Type: application/json

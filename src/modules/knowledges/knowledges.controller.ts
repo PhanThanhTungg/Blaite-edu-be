@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { KnowledgesService } from './knowledges.service';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
 import { Knowledge } from 'generated/prisma';
@@ -12,6 +12,24 @@ import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
 export class KnowledgesController {
   constructor(private readonly knowledgesService: KnowledgesService) {}
   
+
+  // GET /knowledges/detail/:id
+  @Get('detail/:id')
+  async getOneKnowledge(
+    @Param('id') knowledgeId: string,
+    @CurrentUser() user: User
+  ): Promise<Knowledge> {
+    return this.knowledgesService.getOneKnowledge(knowledgeId, user.id);
+  }
+
+  // GET /knowledges/topic/:id
+  @Get('topic/:id')
+  async getKnowledgesOfTopic(
+    @Param('id') topicId: string,
+    @CurrentUser() user: User
+  ): Promise<Knowledge[]> {
+    return this.knowledgesService.getKnowledgesOfTopic(topicId, user.id);
+  }
 
   // POST /knowledges
   @Post()
