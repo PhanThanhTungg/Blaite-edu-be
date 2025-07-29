@@ -20,7 +20,6 @@ export class TopicsController {
     return this.topicsService.getTopic(topicId, user.id);
   }
 
-
   // GET: /topics
   @Get()
   async getTopics(

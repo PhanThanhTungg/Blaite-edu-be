@@ -56,6 +56,7 @@ model Knowledge {
   id        String     @id @default(uuid())
   topicId   String
   topic     Topic      @relation(fields: [topicId], references: [id])
+  name      String
   content   String
   reviewAt  DateTime?  
   avgScore  Int        @default(0) 

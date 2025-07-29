@@ -5,6 +5,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { TopicsModule } from './modules/topics/topics.module';
+import { KnowledgesModule } from './modules/knowledges/knowledges.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { TopicsModule } from './modules/topics/topics.module';
       envFilePath: '.env',
     }),
     AuthModule,
-    TopicsModule
+    TopicsModule,
+    KnowledgesModule
   ],
   controllers: [AppController],
   providers: [AppService],
