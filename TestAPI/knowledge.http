@@ -1,0 +1,15 @@
+@url = http://localhost:3001
+
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiMjMzYWM3OTItYmMyNi00MDlhLTkwYmYtNTZkODM0OTQzZmJhIiwiaWF0IjoxNzUzNzYxMjg4LCJleHAiOjE3NTM4NDc2ODh9.nv0F8vkDzAyw9yRnk9UNPO5b7AZrsB_NIg3tXTsbfEE
+
+### create a new knowledge 
+POST {{url}}/knowledges
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "name":"danh từ",
+  "content": "danh từ đếm được",
+  "topicId": "9e72585b-9455-4979-ac2b-26c1edb2a412"
+}
+

@@ -1,6 +1,6 @@
 @url = http://localhost:3001
 
-@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiN2U3YjcyOGMtZTYyNC00NjRkLThhNDQtYjQ2ZGNlOTA2MTdjIiwiaWF0IjoxNzUzNzIwNTQ3LCJleHAiOjE3NTM4MDY5NDd9.Ei6oQqql_Q9n30KSAEIwvU83a7Dp6Xo9EzIK_o450Y0
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiMjMzYWM3OTItYmMyNi00MDlhLTkwYmYtNTZkODM0OTQzZmJhIiwiaWF0IjoxNzUzNzYxMjg4LCJleHAiOjE3NTM4NDc2ODh9.nv0F8vkDzAyw9yRnk9UNPO5b7AZrsB_NIg3tXTsbfEE
 
 
 ### get a topic by id
@@ -20,9 +20,9 @@ Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "name": "Toán nâng cao",
-  "description": "Học toán nâng cao",
-  "prompt":"Hãy giúp tôi học toán nâng cao"
+  "name": "Tiếng Anh cơ bản",
+  "description": "Học tiếng anh cơ bản",
+  "prompt": "Hãy giúp tôi học tiếng anh cơ bản"
 }
 
 ### edit a topic
