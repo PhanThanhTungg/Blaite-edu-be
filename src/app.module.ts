@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TopicsModule } from './modules/topics/topics.module';
 import { KnowledgesModule } from './modules/knowledges/knowledges.module';
 import { ClassesModule } from './modules/classes/classes.module';
+import { GeminiModule } from './modules/gemini/gemini.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { ClassesModule } from './modules/classes/classes.module';
     AuthModule,
     TopicsModule,
     KnowledgesModule,
-    ClassesModule
+    ClassesModule,
+    GeminiModule
   ],
   controllers: [AppController],
   providers: [AppService],

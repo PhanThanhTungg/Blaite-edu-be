@@ -1,0 +1,44 @@
+@url = http://localhost:3001
+
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1bmdAZ21haWwuY29tIiwic3ViIjoiYzdlYWM0YTAtMDQxNy00YzM4LThlZjAtZjU2MTZlYzZiNTRhIiwiaWF0IjoxNzUzODg2NTI3LCJleHAiOjE3NTM5NzI5Mjd9.bbhB9UbQELuMyuZ8l4nGg1ZCFeACirA3soPIzIftoLU
+
+### chat
+POST {{url}}/gemini/chat
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "prompt": "hello, ban la ai"
+}
+
+### generate text
+POST {{url}}/gemini/generate
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "prompt": "Hãy giúp tôi viết một đoạn văn về lợi ích của việc học tiếng anh",
+  "temperature": 0.7,
+  "maxTokens": 50
+}
+
+### generate multiple responses
+POST {{url}}/gemini/generate-multiple?count=3
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "prompt": "Hãy giúp tôi viết một đoạn văn về lợi ích của việc học tiếng anh"
+}
+
+### File Upload
+POST {{url}}/gemini/analyze-document
+Authorization: Bearer {{AccessToken}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="image.png"
+Content-Type: image/png
+
+< ./image.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
