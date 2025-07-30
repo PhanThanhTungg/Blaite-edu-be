@@ -14,7 +14,7 @@ export class KnowledgesService {
     const knowledge = await this.prisma.knowledge.findUnique({
       where: { 
         id: knowledgeId,
-        topic: { userId: userId }
+        topic: { class: { userId: userId } }
       }
     });
     
@@ -72,7 +72,7 @@ export class KnowledgesService {
     const knowledge = await this.prisma.knowledge.findUnique({
       where: { 
         id: knowledgeId,
-        topic: { userId: userId }
+        topic: { class: { userId: userId } }
       }
     });
 
@@ -83,7 +83,7 @@ export class KnowledgesService {
     const topic = await this.prisma.topic.findUnique({
       where: {
         id: topicId,
-        userId: userId,
+        class: { userId: userId }
       },
     });
 

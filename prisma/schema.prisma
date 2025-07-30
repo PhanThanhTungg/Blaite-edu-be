@@ -14,6 +14,20 @@ enum TypeAuth {
   facebook
 }
 
+enum LevelClass {
+  beginner
+  elementary
+  intermediate
+  upper_intermediate
+  advanced
+}
+
+enum StatusClass {
+  private
+  protected
+  public
+}
+
 model User {
   id             String     @id @default(uuid())
   typeAuth       TypeAuth   @default(account)
@@ -29,7 +43,7 @@ model User {
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   prompt         String?
-  topics         Topic[]
+  classes        Class[]
   activities     Activity[]
   streak         Int?       @default(0)
   lastActiveDate DateTime?
@@ -37,27 +51,43 @@ model User {
   @@map("users")
 }
 
+model Class {
+  id        String   @id @default(uuid())
+  userId    String   
+  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  prompt    String
+  status    StatusClass @default(private)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  topics    Topic[]
+
+  @@map("classes")
+}
+
 model Topic {
   id          String      @id @default(uuid())
-  userId      String
-  user        User        @relation(fields: [userId], references: [id])
+  classId     String
   name        String
-  description String?
-  prompt      String?
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
+  prompt      String?     @default("Không có mô tả")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  class       Class       @relation(fields: [classId], references: [id])
   knowledges  Knowledge[]
-  questions   Question[]
 
   @@map("topics")
 }
 
 model Knowledge {
   id        String     @id @default(uuid())
+  parentId  String?
+  parent    Knowledge?  @relation("KnowledgeParent", fields: [parentId], references: [id])
+  children  Knowledge[] @relation("KnowledgeParent")
   topicId   String
   topic     Topic      @relation(fields: [topicId], references: [id])
   name      String
-  content   String
+  prompt    String     @default("Không có mô tả")
   reviewAt  DateTime?  
   avgScore  Int        @default(0) 
   createdAt DateTime   @default(now()) 
@@ -69,16 +99,14 @@ model Knowledge {
 
 model Question {
   id          String     @id @default(uuid())
-  messageId   String?
-  knowledgeId String?
-  knowledge   Knowledge? @relation(fields: [knowledgeId], references: [id])
+  knowledgeId String
+  knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id])
   content     String
   answer      String?
   score       Int?
   aiFeedback  String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  Topic       Topic?     @relation(fields: [topicId], references: [id])
   topicId     String?
 
   @@map("questions")

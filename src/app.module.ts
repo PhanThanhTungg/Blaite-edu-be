@@ -6,6 +6,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { TopicsModule } from './modules/topics/topics.module';
 import { KnowledgesModule } from './modules/knowledges/knowledges.module';
+import { ClassesModule } from './modules/classes/classes.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { KnowledgesModule } from './modules/knowledges/knowledges.module';
     }),
     AuthModule,
     TopicsModule,
-    KnowledgesModule
+    KnowledgesModule,
+    ClassesModule
   ],
   controllers: [AppController],
   providers: [AppService],
