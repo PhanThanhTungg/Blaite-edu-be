@@ -24,6 +24,10 @@ Authorization: Bearer {{AccessToken}}
   "prompt": "Hãy giúp tôi học tiếng anh cơ bản"
 }
 
+### generate topics
+POST {{url}}/topics/class/c84eb874-1eb5-43dc-85e7-2c2fa0631a7c/generate?maxTokens=1000&temperature=0.5
+Authorization: Bearer {{AccessToken}}
+
 ### edit a topic
 PATCH {{url}}/topics/603a7ac3-7e4c-4795-9522-9992f5cbe40a
 Content-Type: application/json
@@ -34,7 +38,7 @@ Authorization: Bearer {{AccessToken}}
 }
 
 ### delete a topic
-DELETE {{url}}/topics/603a7ac3-7e4c-4795-9522-9992f5cbe40a
+DELETE {{url}}/topics/233762a5-809a-4b89-b7e0-641243ecb604
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 

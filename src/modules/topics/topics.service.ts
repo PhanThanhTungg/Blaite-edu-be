@@ -2,11 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { Class, PrismaClient, Topic } from 'generated/prisma';
 import { EditTopicDto } from './dto/edit-topic.dto';
+import { GeminiService } from '../gemini/gemini.service';
 
 @Injectable()
 export class TopicsService {
   private prisma: PrismaClient;
-  constructor() {
+  constructor(private readonly geminiService: GeminiService) {
     this.prisma = new PrismaClient();
   }
 
@@ -37,6 +38,37 @@ export class TopicsService {
       },
     });
     return newTopic;
+  }
+
+  async generateTopic(classId: string, userId: string, maxTokens: number, temperature: number): Promise<any> {
+    const classFound = await this.checkClassBelongToUser(classId, userId);
+    const prompt = `
+      Tôi đang tạo lớp học tên là ${classFound.name}
+      Yêu cầu của học sinh về lớp học là: ${classFound.prompt}
+      Bạn hãy đóng vai trò là một chuyên gia trong lĩnh vực trên hãy tạo ra các chủ đề lớn, trọng tâm đáp ứng được yêu cầu của học sinh
+      Trả về dưới dạng chuỗi json là một mảng các chủ đề, mỗi chủ đề có các thuộc tính, không viết gì thêm:
+      - name: tên chủ đề
+      - prompt: prompt mô tả chủ đề, để từ prompt này tôi sẽ tạo ra các knowledge point cho chủ đề này
+    `;
+    const response = await this.geminiService.generateText({
+      prompt,
+      maxTokens,
+      temperature
+    });
+
+    const responseAPI: Topic[] = [];
+    const result = JSON.parse(response.text.replace(/^.*\n/, '').replace(/\n.*$/, ''));
+    for (const topic of result) {
+      const newTopic = await this.prisma.topic.create({
+        data: {
+          name: topic.name,
+          prompt: topic.prompt,
+          classId
+        },
+      });
+      responseAPI.push(newTopic);
+    }
+    return responseAPI;
   }
 
   async editTopic(topicId: string, topic: EditTopicDto, userId: string): Promise<Topic> {

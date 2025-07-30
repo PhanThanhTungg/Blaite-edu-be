@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Topic, User } from 'generated/prisma';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { TopicsService } from './topics.service';
@@ -46,6 +46,19 @@ export class TopicsController {
     @CurrentUser() user: User
   ) : Promise<Topic> {
     return this.topicsService.createTopic(createTopicDto, classId, user.id);
+  }
+
+  // POST: /topics/class/:id/generate
+  @ApiOperation({ summary: 'Generate topics for a class' })
+  @ApiParam({ name: 'id', description: 'ID of the class' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @Post('class/:id/generate')
+  async generateTopic(
+    @Param('id') classId: string,
+    @Query('maxTokens') maxTokens: number,
+    @Query('temperature') temperature: number,
+    @CurrentUser() user: User
+  ) : Promise<any> {
+    return this.topicsService.generateTopic(classId, user.id, maxTokens || 1000, temperature || 0.5);
   }
 
   // PATCH: /topics/:id
