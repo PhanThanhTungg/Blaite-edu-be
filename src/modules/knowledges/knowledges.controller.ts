@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { KnowledgesService } from './knowledges.service';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
 import { Knowledge } from 'generated/prisma';
@@ -43,6 +43,18 @@ export class KnowledgesController {
     @CurrentUser() user: User
   ): Promise<Knowledge> {
     return this.knowledgesService.createKnowledge(createKnowledgeDto, user.id);
+  }
+
+  // POST /knowledges/topic/:id/generate
+  @ApiOperation({ summary: 'Generate knowledge points for a topic' })
+  @Post('topic/:id/generate')
+  async generateKnowledge(
+    @Param('id') topicId: string,
+    @Query('maxTokens') maxTokens: number,
+    @Query('temperature') temperature: number,
+    @CurrentUser() user: User
+  ): Promise<any> {
+    return this.knowledgesService.generateKnowledge(topicId, user.id, maxTokens || 1000, temperature || 0.5);
   }
 
   // PATCH /knowledges/:id

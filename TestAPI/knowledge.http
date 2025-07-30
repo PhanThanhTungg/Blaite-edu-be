@@ -11,7 +11,7 @@ Authorization: Bearer {{AccessToken}}
 
 
 ### get a knowledge of topic by id
-GET {{url}}/knowledges/topic/9e72585b-9455-4979-ac2b-26c1edb2a412
+GET {{url}}/knowledges/topic/ec5e4825-3562-47ea-9733-ecce199ae817
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
@@ -27,3 +27,6 @@ Authorization: Bearer {{AccessToken}}
   "topicId": "9e72585b-9455-4979-ac2b-26c1edb2a412"
 }
 
+### generate knowledge
+POST {{url}}/knowledges/topic/ec5e4825-3562-47ea-9733-ecce199ae817/generate?maxTokens=10000&temperature=0.5
+Authorization: Bearer {{AccessToken}}

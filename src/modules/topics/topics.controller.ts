@@ -57,7 +57,7 @@ export class TopicsController {
     @Query('maxTokens') maxTokens: number,
     @Query('temperature') temperature: number,
     @CurrentUser() user: User
-  ) : Promise<any> {
+  ) : Promise<Topic[]> {
     return this.topicsService.generateTopic(classId, user.id, maxTokens || 1000, temperature || 0.5);
   }
 
