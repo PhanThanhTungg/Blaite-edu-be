@@ -5,8 +5,9 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from 'generated/prisma';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
-import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('classes')
 @UseGuards(JwtAuthGuard)
 export class ClassesController {
@@ -32,7 +33,10 @@ export class ClassesController {
   // POST: /classes
   @ApiOperation({ summary: 'Create a class' })
   @Post()
-  async createClass(@Body() createClassDto: CreateClassDto, @CurrentUser() user: User) {
+  async createClass(
+    @Body() createClassDto: CreateClassDto, 
+    @CurrentUser() user: User
+  ) {
     return this.classesService.createClass(createClassDto, user.id);
   }
 

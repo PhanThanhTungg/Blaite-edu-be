@@ -6,8 +6,9 @@ import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '@clerk/express';
 import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('knowledges')
 export class KnowledgesController {

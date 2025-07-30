@@ -1,41 +1,40 @@
 @url = http://localhost:3001
 
-@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1dHR1eHl0aW5AZ21haWwuY29tIiwic3ViIjoiMjMzYWM3OTItYmMyNi00MDlhLTkwYmYtNTZkODM0OTQzZmJhIiwiaWF0IjoxNzUzNzYxMjg4LCJleHAiOjE3NTM4NDc2ODh9.nv0F8vkDzAyw9yRnk9UNPO5b7AZrsB_NIg3tXTsbfEE
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1bmdAZ21haWwuY29tIiwic3ViIjoiYzdlYWM0YTAtMDQxNy00YzM4LThlZjAtZjU2MTZlYzZiNTRhIiwiaWF0IjoxNzUzODg2NTI3LCJleHAiOjE3NTM5NzI5Mjd9.bbhB9UbQELuMyuZ8l4nGg1ZCFeACirA3soPIzIftoLU
 
 
 ### get a topic by id
-GET {{url}}/topics/9943194f-ea3a-49b4-8f5b-b5a653c61dd3
+GET {{url}}/topics/603a7ac3-7e4c-4795-9522-9992f5cbe40a
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 
 ### get all topics
-GET {{url}}/topics
+GET {{url}}/topics/class/c84eb874-1eb5-43dc-85e7-2c2fa0631a7c
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 ### create a new topic
-POST {{url}}/topics
+POST {{url}}/topics/class/c84eb874-1eb5-43dc-85e7-2c2fa0631a7c
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "name": "Tiếng Anh cơ bản",
-  "description": "Học tiếng anh cơ bản",
+  "name": "Ngữ pháp",
   "prompt": "Hãy giúp tôi học tiếng anh cơ bản"
 }
 
 ### edit a topic
-PATCH {{url}}/topics/b86f20e5-816a-4541-b1a8-8ccd286b27c5
+PATCH {{url}}/topics/603a7ac3-7e4c-4795-9522-9992f5cbe40a
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 {
-  "name": "Toán cơ bản"
+  "prompt": "Hãy giúp tôi học ngữ pháp tiếng anh cơ bản"
 }
 
 ### delete a topic
-DELETE {{url}}/topics/b86f20e5-816a-4541-b1a8-8ccd286b27c5
+DELETE {{url}}/topics/603a7ac3-7e4c-4795-9522-9992f5cbe40a
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 

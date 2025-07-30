@@ -54,10 +54,11 @@ model User {
 model Class {
   id        String   @id @default(uuid())
   userId    String   
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   prompt    String
   status    StatusClass @default(private)
+  deleted   Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -71,9 +72,10 @@ model Topic {
   classId     String
   name        String
   prompt      String?     @default("Không có mô tả")
+  deleted     Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  class       Class       @relation(fields: [classId], references: [id])
+  class       Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
   knowledges  Knowledge[]
 
   @@map("topics")
@@ -82,7 +84,7 @@ model Topic {
 model Knowledge {
   id        String     @id @default(uuid())
   parentId  String?
-  parent    Knowledge?  @relation("KnowledgeParent", fields: [parentId], references: [id])
+  parent    Knowledge?  @relation("KnowledgeParent", fields: [parentId], references: [id], onDelete: Cascade)
   children  Knowledge[] @relation("KnowledgeParent")
   topicId   String
   topic     Topic      @relation(fields: [topicId], references: [id])
@@ -90,6 +92,7 @@ model Knowledge {
   prompt    String     @default("Không có mô tả")
   reviewAt  DateTime?  
   avgScore  Int        @default(0) 
+  deleted   Boolean    @default(false)
   createdAt DateTime   @default(now()) 
   updatedAt DateTime   @updatedAt 
   questions Question[]
@@ -105,6 +108,7 @@ model Question {
   answer      String?
   score       Int?
   aiFeedback  String?
+  deleted     Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   topicId     String?

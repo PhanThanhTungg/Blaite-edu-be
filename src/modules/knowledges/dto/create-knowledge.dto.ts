@@ -20,6 +20,15 @@ export class CreateKnowledgeDto{
   })
   content: string;
 
+  @IsString({ message: "Parent ID must be a string" })
+  @IsOptional()
+  @ApiProperty({
+    description: "ID of the parent knowledge",
+    example: "3f92a5df-09d9-4ae1-ab99-421c7da12ac9",
+    required: false
+  })
+  parentId: string;
+
   @IsString({ message: "Topic ID must be a string" })
   @IsNotEmpty({ message: "Topic ID is required" })
   @ApiProperty({

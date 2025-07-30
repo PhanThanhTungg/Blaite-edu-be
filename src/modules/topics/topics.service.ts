@@ -10,8 +10,8 @@ export class TopicsService {
     this.prisma = new PrismaClient();
   }
 
-  async getTopic(topicId: string, userId: string, classId: string): Promise<Topic> {
-    return this.checkTopicBelongToUserAndClass(topicId, userId, classId);
+  async getTopic(topicId: string, userId: string): Promise<Topic> {
+    return this.checkTopicBelongToUser(topicId, userId);
   }
 
   async getTopics(classId: string, userId: string): Promise<Topic[]> {

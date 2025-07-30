@@ -15,15 +15,15 @@ export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 
   // GET: /topics/:id
-  // @ApiOperation({ summary: 'Get a topic by ID' })
-  // @ApiParam({ name: 'id', description: 'ID of the topic' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
-  // @Get(':id')
-  // async getTopic(
-  //   @Param('id') topicId: string,
-  //   @CurrentUser() user: User
-  // ) : Promise<Topic> {
-  //   return this.topicsService.getTopic(topicId, user.id, classId);
-  // }
+  @ApiOperation({ summary: 'Get a topic by ID' })
+  @ApiParam({ name: 'id', description: 'ID of the topic' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @Get(':id')
+  async getTopic(
+    @Param('id') topicId: string,
+    @CurrentUser() user: User
+  ) : Promise<Topic> {
+    return this.topicsService.getTopic(topicId, user.id);
+  }
 
   // GET: /topics/class/:id
   @ApiOperation({ summary: 'Get all topics for a class' })
