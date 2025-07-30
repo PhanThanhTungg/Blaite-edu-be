@@ -24,7 +24,7 @@ export class TopicsService {
 
   async getTopics(userId: string): Promise<Topic[]> {
     const topics = await this.prisma.topic.findMany({
-      where: { userId: userId },
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
     return topics;

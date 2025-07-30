@@ -6,6 +6,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '@clerk/express';
 import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
+import { ApiOperation } from '@nestjs/swagger';
 
 @UseGuards(JwtAuthGuard)
 @Controller('knowledges')
@@ -14,6 +15,7 @@ export class KnowledgesController {
   
 
   // GET /knowledges/detail/:id
+  @ApiOperation({ summary: 'Get knowledge details by ID' })
   @Get('detail/:id')
   async getOneKnowledge(
     @Param('id') knowledgeId: string,
@@ -23,6 +25,7 @@ export class KnowledgesController {
   }
 
   // GET /knowledges/topic/:id
+  @ApiOperation({ summary: 'Get all knowledges of a topic by topic ID' })
   @Get('topic/:id')
   async getKnowledgesOfTopic(
     @Param('id') topicId: string,
@@ -32,6 +35,7 @@ export class KnowledgesController {
   }
 
   // POST /knowledges
+  @ApiOperation({ summary: 'Create a new knowledge' })
   @Post()
   async createKnowledge(
     @Body() createKnowledgeDto: CreateKnowledgeDto,
@@ -41,6 +45,7 @@ export class KnowledgesController {
   }
 
   // PATCH /knowledges/:id
+  @ApiOperation({ summary: 'Edit an existing knowledge' })
   @Patch(':id')
   async editKnowledge(
     @Param('id') knowledgeId: string,
@@ -51,6 +56,7 @@ export class KnowledgesController {
   }
 
   // DELETE /knowledges/:id
+  @ApiOperation({ summary: 'Delete a knowledge by ID' })
   @Delete(':id')
   async deleteKnowledge(
     @Param('id') knowledgeId: string,

@@ -4,7 +4,7 @@
 
 
 ### get a topic by id
-GET {{url}}/topics/b7bb1025-b2a5-4a2c-9ad7-260c04169d49
+GET {{url}}/topics/9943194f-ea3a-49b4-8f5b-b5a653c61dd3
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 

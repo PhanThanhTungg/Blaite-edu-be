@@ -6,7 +6,10 @@ import { LoginDto } from './dto/login.dto';
 import { LoginThrottlerGuard } from '../../common/guards/login-throttler.guard';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -15,6 +18,8 @@ export class AuthController {
   ) {}
 
   // POST: /auth/register
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiResponse({ status: 201, description: 'User successfully registered', type: UserResponseDto })
   @Post('register')
   async register(
     @Body() registerDTO: RegisterDto,
@@ -25,6 +30,8 @@ export class AuthController {
   }
 
   // POST: /auth/login
+  @ApiOperation({ summary: 'Login user' })
+  @ApiResponse({ status: 200, description: 'User successfully logged in', type: UserResponseDto })
   @Post('login')
   @UseGuards(LoginThrottlerGuard)
   async login(
@@ -38,6 +45,7 @@ export class AuthController {
   } 
 
   // POST: /auth/refresh
+  @ApiOperation({ summary: 'Refresh access token' })
   @Post('refresh')
   async refresh(
     @Req() req: Request,
@@ -51,6 +59,7 @@ export class AuthController {
   }
 
   // POST: /auth/logout
+  @ApiOperation({ summary: 'Logout user' })
   @Post('logout')
   async logout(
     @Res({passthrough: true}) res: Response
