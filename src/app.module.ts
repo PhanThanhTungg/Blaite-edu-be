@@ -8,6 +8,7 @@ import { TopicsModule } from './modules/topics/topics.module';
 import { KnowledgesModule } from './modules/knowledges/knowledges.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { GeminiModule } from './modules/gemini/gemini.module';
+import { TypeQuestionsModule } from './modules/type-questions/type-questions.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { GeminiModule } from './modules/gemini/gemini.module';
     TopicsModule,
     KnowledgesModule,
     ClassesModule,
-    GeminiModule
+    GeminiModule,
+    TypeQuestionsModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -83,12 +83,14 @@ model Topic {
 
 model QuestionType{
   id        String   @id @default(uuid())
-  type      String 
-  prompt    String
+  name      String 
+  prompt    String?
   questions Question[]
   deleted   Boolean    @default(false)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  @@map("question_types")
 }
 
 model Knowledge {
@@ -106,15 +108,35 @@ model Knowledge {
   deleted   Boolean    @default(false)
   createdAt DateTime   @default(now()) 
   updatedAt DateTime   @updatedAt 
-  questions Question[]
+  exams Exam[]
 
   @@map("knowledges")
 }
 
-model Question {
-  id          String     @id @default(uuid())
+enum TypeExam {
+  evaluate
+  practice
+}
+
+model Exam{
+  id          String   @id @default(uuid())
   knowledgeId String
   knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
+  name        String
+  prompt      String?
+  questions   Question[]
+  type        TypeExam   @default(practice)
+  deleted     Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("exams")
+}
+
+model Question {
+  id          String     @id @default(uuid())
+  examId      String
+  exam        Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
   content     String
   answer      String?
   score       Int?

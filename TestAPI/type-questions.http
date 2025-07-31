@@ -1,0 +1,38 @@
+@url = http://localhost:3001
+
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1bmdAZ21haWwuY29tIiwic3ViIjoiYzdlYWM0YTAtMDQxNy00YzM4LThlZjAtZjU2MTZlYzZiNTRhIiwiaWF0IjoxNzUzOTczMjc0LCJleHAiOjE3NTQwNTk2NzR9.7GQMpkChjvS22bC-jWb2UgxTVPxOpJGyZL2izUm3Prs
+
+
+### create a type question
+POST {{url}}/type-questions
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "name": "Điền vào chỗ trống",
+  "prompt":"Hãy tạo câu hỏi điền vào chỗ trống "
+}
+
+### get all type questions
+GET {{url}}/type-questions
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+### get one type question by id
+GET {{url}}/type-questions/12bf5654-334b-4925-a8d7-c1eab9daf1c2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+### update a type question
+PATCH {{url}}/type-questions/12bf5654-334b-4925-a8d7-c1eab9daf1c2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "prompt": "Hãy tạo câu hỏi điền vào chỗ trống update "
+}
+
+### delete a type question
+DELETE {{url}}/type-questions/12bf5654-334b-4925-a8d7-c1eab9daf1c2
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
