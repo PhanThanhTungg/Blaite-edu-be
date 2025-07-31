@@ -24,17 +24,17 @@ export class KnowledgesService {
     return knowledge;
   }
 
-  async getKnowledgesOfTopic(topicId: string, userId: string): Promise<Knowledge[]> {
+  async getKnowledgesOfTopic(topicId: string, userId: string): Promise<any> {
     const isUser = await this.checkKnowledgesUser(userId, topicId);
 
     if (!isUser) throw new NotFoundException("Topic not found");
 
     const knowledges = await this.prisma.knowledge.findMany({
       where: { topicId: topicId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'asc' }
     });
 
-    return knowledges;
+    return this.buildTreeOptimized(knowledges);
   }
 
   async generateKnowledge(topicId: string, userId: string, maxTokens: number, temperature: number): Promise<any> {
@@ -77,9 +77,55 @@ export class KnowledgesService {
     const responseAPI: Knowledge[] = [];
     for (const knowledge of result) {
         const newKnowledge = await this.saveKnowledgeRecursively(knowledge, topicId);
-        responseAPI.push(newKnowledge);
+        responseAPI.push(...newKnowledge);
     }
-    return responseAPI;
+    return this.buildTreeOptimized(responseAPI);
+  }
+
+  async generateTheory(knowledgeId: string, userId: string, maxTokens: number, temperature: number): Promise<any> {
+    const knowledge:Knowledge = await this.checkKnowledge(knowledgeId, userId);
+    const prompt = `
+      Bạn là một giáo viên chuyên nghiệp với kinh nghiệm giảng dạy phong phú. Nhiệm vụ của bạn là tạo ra một bài giảng lý thuyết chi tiết, dễ hiểu và hấp dẫn.
+
+      THÔNG TIN BỐI CẢNH:
+      • Môn học: "${knowledge["topic"].class.name}"
+      • Đối tượng học sinh: ${knowledge["topic"].class.prompt}
+      • Điểm kiến thức cần giảng: "${knowledge.name}"
+      • Phạm vi nội dung: ${knowledge.prompt}
+
+      NHIỆM VỤ:
+      Hãy soạn một bài giảng lý thuyết hoàn chỉnh cho điểm kiến thức trên, phù hợp với trình độ và đặc điểm của học sinh.
+      Chỉ lý thuyết thôi, không cần bài tập
+
+      YÊU CẦU KỸ THUẬT:
+      • Sử dụng các thẻ HTML5, được bọc trong thẻ <div>
+      • Nếu có css thì dùng inline css, theo phong cách trắng đen sang trọng
+      • Tối ưu cho hiển thị web responsive
+      • Độ dài: Tối đa ${maxTokens} tokens
+      • Ngôn ngữ: Tiếng Việt chuẩn, dễ hiểu
+
+      YÊU CẦU NỘI DUNG:
+      • Sử dụng ngôn ngữ phù hợp với trình độ học sinh
+      Đi thẳng vào lý thuyết không cần chào hỏi 
+      • Bố cục logic, mạch lạc từ cơ bản đến nâng cao
+      • Ưu tiên chất lượng và độ chính xác của nội dung
+      • Tích hợp ví dụ thực tế để tăng hiểu biết
+
+      Hãy bắt đầu tạo bài giảng:
+    `;
+    console.log(prompt);
+    const response = await this.geminiService.generateText({
+      prompt,
+      maxTokens,
+      temperature
+    });
+    const promptResponse = response.text.replace(/^.*\n/, '').replace(/\n.*$/, '').replace(/```/g, '');
+
+    const newKnowledge = await this.prisma.knowledge.update({
+      where: { id: knowledgeId },
+      data: { theory: promptResponse }
+    });
+    return newKnowledge;
   }
 
   async createKnowledge(knowledge: CreateKnowledgeDto, userId: string): Promise<Knowledge> {
@@ -114,15 +160,23 @@ export class KnowledgesService {
     return deletedKnowledge;
   }
 
-  private async checkKnowledge(knowledgeId: string, userId: string): Promise<void> {
+  private async checkKnowledge(knowledgeId: string, userId: string): Promise<Knowledge> {
     const knowledge = await this.prisma.knowledge.findUnique({
       where: { 
         id: knowledgeId,
         topic: { class: { userId: userId } }
+      },
+      include: {
+        topic: {
+          include: {
+            class: true
+          }
+        }
       }
     });
 
     if (!knowledge) throw new NotFoundException("Knowledge not found");
+    return knowledge;
   }
 
   private async checkKnowledgesUser(userId: string, topicId: string): Promise<Topic> {
@@ -139,7 +193,7 @@ export class KnowledgesService {
     return topic;
   }
 
-  private async saveKnowledgeRecursively(knowledgeData: any, topicId: string, parentId?: string): Promise<Knowledge> {
+  private async saveKnowledgeRecursively(knowledgeData: any, topicId: string, parentId?: string): Promise<Knowledge[]> {
     const newKnowledge = await this.prisma.knowledge.create({
       data: {
         name: knowledgeData.name,
@@ -148,15 +202,54 @@ export class KnowledgesService {
         parentId: parentId || null
       }
     });
-  
+
+    const responseAPI: Knowledge[] = [];
+    responseAPI.push(newKnowledge);
+    
     if (knowledgeData.children && knowledgeData.children.length > 0) {
       for (const child of knowledgeData.children) {
-        await this.saveKnowledgeRecursively(child, topicId, newKnowledge.id);
+        const childKnowledges = await this.saveKnowledgeRecursively(child, topicId, newKnowledge.id);
+        responseAPI.push(...childKnowledges);
       }
     }
   
-    return newKnowledge;
+    return responseAPI;
   };
+
+  private async buildTreeOptimized(flatList: any) {
+    const tree: any[] = [];
+    const childrenMap = {};
+    
+    // Nhóm các children theo parentId
+    flatList.forEach((item: any) => {
+      const parentId = item.parentId;
+      
+      if (parentId === null || parentId === undefined) {
+        // Không có parent -> thêm vào root
+        tree.push({ ...item, children: [] });
+      } else {
+        // Có parent -> thêm vào map children
+        if (!childrenMap[parentId]) {
+          childrenMap[parentId] = [];
+        }
+        childrenMap[parentId].push({ ...item, children: [] });
+      }
+    });
+    
+    // Gán children cho từng node trong cây
+    function assignChildren(nodes) {
+      nodes.forEach((node: any) => {
+        if (childrenMap[node.id]) {
+          node.children = childrenMap[node.id];
+          // Đệ quy gán children cho các node con
+          assignChildren(node.children);
+        }
+      });
+    }
+    
+    assignChildren(tree);
+    return tree;
+  }
   
 
 }

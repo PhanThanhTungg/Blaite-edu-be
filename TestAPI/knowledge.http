@@ -1,6 +1,6 @@
 @url = http://localhost:3001
 
-@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1bmdAZ21haWwuY29tIiwic3ViIjoiYzdlYWM0YTAtMDQxNy00YzM4LThlZjAtZjU2MTZlYzZiNTRhIiwiaWF0IjoxNzUzODg2NTI3LCJleHAiOjE3NTM5NzI5Mjd9.bbhB9UbQELuMyuZ8l4nGg1ZCFeACirA3soPIzIftoLU
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1bmdAZ21haWwuY29tIiwic3ViIjoiYzdlYWM0YTAtMDQxNy00YzM4LThlZjAtZjU2MTZlYzZiNTRhIiwiaWF0IjoxNzUzOTczMjc0LCJleHAiOjE3NTQwNTk2NzR9.7GQMpkChjvS22bC-jWb2UgxTVPxOpJGyZL2izUm3Prs
 
 
 
@@ -10,7 +10,7 @@ Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
 
 
-### get a knowledge of topic by id
+### get knowledges of topic by id
 GET {{url}}/knowledges/topic/ec5e4825-3562-47ea-9733-ecce199ae817
 Content-Type: application/json
 Authorization: Bearer {{AccessToken}}
@@ -29,4 +29,8 @@ Authorization: Bearer {{AccessToken}}
 
 ### generate knowledge
 POST {{url}}/knowledges/topic/ec5e4825-3562-47ea-9733-ecce199ae817/generate?maxTokens=10000&temperature=0.5
+Authorization: Bearer {{AccessToken}}
+
+### generate theory of knowledge
+POST {{url}}/knowledges/c1c52e7a-1307-4868-a058-01acbca3e057/generate-theory?maxTokens=10000&temperature=0.5
 Authorization: Bearer {{AccessToken}}
