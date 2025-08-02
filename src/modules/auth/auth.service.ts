@@ -6,17 +6,15 @@ import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  private prisma: PrismaClient;
-
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService
-  ) {
-    this.prisma = new PrismaClient();
-  }
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService
+  ) {}
   
   async register(registerDTO: RegisterDto, timezone: string): Promise<UserResponseDto> {
     const userFound = await this.findUserByEmail(registerDTO.email);

@@ -3,13 +3,14 @@ import { Knowledge, PrismaClient, Topic } from '@prisma/client';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
 import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
 import { GeminiService } from '../gemini/gemini.service';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 @Injectable()
 export class KnowledgesService {
-  private prisma: PrismaClient;
-  constructor(private readonly geminiService: GeminiService) {
-    this.prisma = new PrismaClient();
-  }
+  constructor(
+    private readonly geminiService: GeminiService, 
+    private readonly prisma: PrismaService
+  ) {}
 
   async getOneKnowledge(knowledgeId: string, userId: string): Promise<Knowledge> {
     const knowledge = await this.prisma.knowledge.findUnique({

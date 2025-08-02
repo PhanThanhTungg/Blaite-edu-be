@@ -8,11 +8,12 @@ import { TopicsModule } from './modules/topics/topics.module';
 import { KnowledgesModule } from './modules/knowledges/knowledges.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { GeminiModule } from './modules/gemini/gemini.module';
-import { TypeQuestionsModule } from './modules/type-questions/type-questions.module';
-import { ExamsModule } from './modules/exams/exams.module';
+import { PrismaModule } from './shared/prisma/prisma.module';
+import { EnvModule } from './shared/env/env.module';
 
 @Module({
   imports: [
+    EnvModule,
     ThrottlerModule.forRoot([
       {
         name: 'short',
@@ -29,13 +30,12 @@ import { ExamsModule } from './modules/exams/exams.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    PrismaModule,
     AuthModule,
     TopicsModule,
     KnowledgesModule,
     ClassesModule,
     GeminiModule,
-    TypeQuestionsModule,
-    ExamsModule
   ],
   controllers: [AppController],
   providers: [AppService],

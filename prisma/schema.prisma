@@ -32,9 +32,9 @@ model User {
   typeAuth       TypeAuth   @default(account)
   googleId       String?    @unique
   facebookId     String?    @unique
+  telegramId     String?    @unique
   email          String?    @unique
   password       String?
-  telegramId     String?    @unique
   name           String?
   avatarUrl      String?
   phone          String?
@@ -80,18 +80,6 @@ model Topic {
   @@map("topics")
 }
 
-model QuestionType{
-  id        String   @id @default(uuid())
-  name      String 
-  prompt    String?
-  questions Question[]
-  deleted   Boolean    @default(false)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-
-  @@map("question_types")
-}
-
 model Knowledge {
   id        String     @id @default(uuid())
   parentId  String?
@@ -107,44 +95,19 @@ model Knowledge {
   deleted   Boolean    @default(false)
   createdAt DateTime   @default(now()) 
   updatedAt DateTime   @updatedAt 
-  exams Exam[]
-
+  questions Question[]
   @@map("knowledges")
-}
-
-enum TypeExam {
-  evaluate_exercise
-  practice_exercise
-  evaluate_theory
-  practice_theory
-}
-
-model Exam {
-  id          String   @id @default(uuid())
-  knowledgeId String
-  knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
-  prompt      String?
-  aiFeedback  String?
-  questions   Question[]
-  type        TypeExam   
-  deleted     Boolean    @default(false)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  @@map("exams")
 }
 
 model Question {
   id          String     @id @default(uuid())
-  examId      String
-  exam        Exam       @relation(fields: [examId], references: [id], onDelete: Cascade)
   content     String
   answer      String?
   score       Int?
   explain     String?
   aiFeedback  String?
-  typeId      String
-  type        QuestionType @relation(fields: [typeId], references: [id])
+  knowledgeId String
+  knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id])
   deleted     Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

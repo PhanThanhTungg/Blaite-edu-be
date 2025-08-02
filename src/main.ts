@@ -4,10 +4,12 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { EnvService } from './shared/env/env.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {cors: true});
 
+  const env = app.get(EnvService);
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe(
@@ -30,6 +32,6 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(env.get('PORT') ?? 3000);
 }
 bootstrap();

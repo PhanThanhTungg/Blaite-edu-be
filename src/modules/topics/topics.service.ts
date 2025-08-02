@@ -3,13 +3,14 @@ import { CreateTopicDto } from './dto/create-topic.dto';
 import { Class, PrismaClient, Topic } from '@prisma/client';
 import { EditTopicDto } from './dto/edit-topic.dto';
 import { GeminiService } from '../gemini/gemini.service';
+import { PrismaService } from 'src/shared/prisma/prisma.service';
 
 @Injectable()
 export class TopicsService {
-  private prisma: PrismaClient;
-  constructor(private readonly geminiService: GeminiService) {
-    this.prisma = new PrismaClient();
-  }
+  constructor(
+    private readonly geminiService: GeminiService, 
+    private readonly prisma: PrismaService
+  ) {}
 
   async getTopic(topicId: string, userId: string): Promise<Topic> {
     return this.checkTopicBelongToUser(topicId, userId);
