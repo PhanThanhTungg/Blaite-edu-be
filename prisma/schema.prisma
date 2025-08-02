@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -47,7 +46,7 @@ model User {
   activities     Activity[]
   streak         Int?       @default(0)
   lastActiveDate DateTime?
-
+ 
   @@map("users")
 }
 
@@ -114,18 +113,20 @@ model Knowledge {
 }
 
 enum TypeExam {
-  evaluate
-  practice
+  evaluate_exercise
+  practice_exercise
+  evaluate_theory
+  practice_theory
 }
 
-model Exam{
+model Exam {
   id          String   @id @default(uuid())
   knowledgeId String
   knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
-  name        String
   prompt      String?
+  aiFeedback  String?
   questions   Question[]
-  type        TypeExam   @default(practice)
+  type        TypeExam   
   deleted     Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

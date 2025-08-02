@@ -9,6 +9,7 @@ import { KnowledgesModule } from './modules/knowledges/knowledges.module';
 import { ClassesModule } from './modules/classes/classes.module';
 import { GeminiModule } from './modules/gemini/gemini.module';
 import { TypeQuestionsModule } from './modules/type-questions/type-questions.module';
+import { ExamsModule } from './modules/exams/exams.module';
 
 @Module({
   imports: [
@@ -33,7 +34,8 @@ import { TypeQuestionsModule } from './modules/type-questions/type-questions.mod
     KnowledgesModule,
     ClassesModule,
     GeminiModule,
-    TypeQuestionsModule
+    TypeQuestionsModule,
+    ExamsModule
   ],
   controllers: [AppController],
   providers: [AppService],

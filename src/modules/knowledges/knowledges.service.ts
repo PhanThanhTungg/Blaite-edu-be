@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Knowledge, PrismaClient, Topic } from 'generated/prisma';
+import { Knowledge, PrismaClient, Topic } from '@prisma/client';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
 import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
 import { GeminiService } from '../gemini/gemini.service';
