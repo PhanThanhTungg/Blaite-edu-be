@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient, QuestionType } from 'generated/prisma';
+import { PrismaClient, QuestionType } from '@prisma/client';
 import { CreateTypeQuestionsDto } from './dto/create-type-questions.dto';
 import { EditTypeQuestionsDto } from './dto/edit-type-questions.dto';
 

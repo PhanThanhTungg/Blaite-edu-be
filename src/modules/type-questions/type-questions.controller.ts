@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { TypeQuestionsService } from './type-questions.service';
 import { CreateTypeQuestionsDto } from './dto/create-type-questions.dto';
-import { QuestionType } from 'generated/prisma';
+import { QuestionType } from '@prisma/client';
 import { ApiOperation } from '@nestjs/swagger';
 import { EditTypeQuestionsDto } from './dto/edit-type-questions.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';

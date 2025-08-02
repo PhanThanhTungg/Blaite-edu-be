@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { UserResponseDto } from './dto/user-response-dto';
-import { PrismaClient, TypeAuth, User} from 'generated/prisma';
+import { PrismaClient, TypeAuth, User} from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';

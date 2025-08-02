@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTopicDto } from './dto/create-topic.dto';
-import { Class, PrismaClient, Topic } from 'generated/prisma';
+import { Class, PrismaClient, Topic } from '@prisma/client';
 import { EditTopicDto } from './dto/edit-topic.dto';
 import { GeminiService } from '../gemini/gemini.service';
 

@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } fro
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { ClassesService } from './classes.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from 'generated/prisma';
+import { User } from '@prisma/client';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';

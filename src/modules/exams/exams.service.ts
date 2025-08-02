@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Knowledge, PrismaClient } from 'generated/prisma';
+import { Knowledge, PrismaClient } from '@prisma/client';
 import { CreateExamDto, TypeExam } from './dto/create-exam.dto';
 import { ResponseCreateExam } from './interfaces/response-create-exam.interface';
 import { GeminiService } from '../gemini/gemini.service';

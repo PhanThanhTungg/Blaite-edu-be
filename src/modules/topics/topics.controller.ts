@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { Topic, User } from 'generated/prisma';
+import { Topic, User } from '@prisma/client';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { TopicsService } from './topics.service';
 import { CreateTopicDto } from './dto/create-topic.dto';

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { KnowledgesService } from './knowledges.service';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
-import { Knowledge } from 'generated/prisma';
+import { Knowledge } from '@prisma/client';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '@clerk/express';
