@@ -1,7 +1,7 @@
 import { Body, Controller, Param, ParseEnumPipe, Post, UseGuards } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Question, TypeQuestion, User } from '@prisma/client';
@@ -14,6 +14,7 @@ export class QuestionsController {
 
   constructor(private readonly questionsService: QuestionsService) {}
 
+  @ApiOperation({ summary: 'Generate a question based on knowledge and type' })
   @Post('knowledge/:id/generate/:typeQuestion')
   async generateQuestion(
     @Param('id') knowledgeId: string, 
@@ -23,6 +24,7 @@ export class QuestionsController {
     return this.questionsService.createQuestion(knowledgeId, user.id, typeQuestion);
   }
 
+  @ApiOperation({ summary: 'Answer a question' })
   @Post('answer/:id')
   async answerQuestion(
     @Param('id') questionId: string,
