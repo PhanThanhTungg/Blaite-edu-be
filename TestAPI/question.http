@@ -1,0 +1,17 @@
+@url = http://localhost:3001
+
+@AccessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InR1bmdAZ21haWwuY29tIiwic3ViIjoiYzA2ZmZjOGYtYWVhMi00MDIyLTg2YWYtYTM5ZGEzN2E3NDJiIiwiaWF0IjoxNzU0MTQ5ODY1LCJleHAiOjE3NTQyMzYyNjV9.v3tIgJMM3T8CHOBSBvgEzP7xjPLzKfyY7hd-1poW7YQ
+
+### gen questions
+POST {{url}}/questions/knowledge/19138479-983e-49b8-87b1-7ab4917ab3cd/generate/theory
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+### answer a question
+POST {{url}}/questions/answer/0d68ad3c-b93b-49ac-a7e1-d0a0803930b6
+Content-Type: application/json
+Authorization: Bearer {{AccessToken}}
+
+{
+  "answer": "i usually go to the gym in the morning. I always eat a healthy breakfast after that. I like to have eggs and toast with some fruit. I also drink a lot of water throughout the day. In the evening, I sometimes relax by reading a book or watching TV. On weekends, I like to go hiking or spend time with friends."
+}

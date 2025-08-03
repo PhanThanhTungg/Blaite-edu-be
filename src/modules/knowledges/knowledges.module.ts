@@ -6,6 +6,7 @@ import { GeminiModule } from '../gemini/gemini.module';
 @Module({
   controllers: [KnowledgesController],
   providers: [KnowledgesService],
-  imports: [GeminiModule]
+  imports: [GeminiModule],
+  exports: [KnowledgesService]
 })
 export class KnowledgesModule {}

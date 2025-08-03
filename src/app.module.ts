@@ -10,6 +10,7 @@ import { ClassesModule } from './modules/classes/classes.module';
 import { GeminiModule } from './modules/gemini/gemini.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { EnvModule } from './shared/env/env.module';
+import { QuestionsModule } from './modules/questions/questions.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { EnvModule } from './shared/env/env.module';
     KnowledgesModule,
     ClassesModule,
     GeminiModule,
+    QuestionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

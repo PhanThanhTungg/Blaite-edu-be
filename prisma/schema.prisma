@@ -27,6 +27,11 @@ enum StatusClass {
   public
 }
 
+enum TypeQuestion {
+  theory
+  practice
+}
+
 model User {
   id             String     @id @default(uuid())
   typeAuth       TypeAuth   @default(account)
@@ -107,6 +112,7 @@ model Question {
   explain     String?
   aiFeedback  String?
   knowledgeId String
+  type        TypeQuestion
   knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id])
   deleted     Boolean    @default(false)
   createdAt   DateTime   @default(now())
