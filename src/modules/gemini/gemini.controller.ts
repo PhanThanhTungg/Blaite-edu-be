@@ -1,13 +1,13 @@
-import { Controller, Post, Body, HttpCode, HttpStatus, Query, ValidationPipe, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Post, Body, Query, ValidationPipe, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { GeminiService } from './gemini.service';
 import { ChatRequestDto, ChatResponseDto, GenerateTextRequestDto, GenerateTextResponseDto } from './dto/gemini.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
 @ApiTags('Gemini AI')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(ClerkAuthGuard)
 @Controller('gemini')
 export class GeminiController {
   constructor(private readonly geminiService: GeminiService) {}

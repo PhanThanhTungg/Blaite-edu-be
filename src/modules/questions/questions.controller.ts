@@ -1,13 +1,12 @@
 import { Body, Controller, Param, ParseEnumPipe, Post, UseGuards } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Question, TypeQuestion, User } from '@prisma/client';
 import { AnswerQuestionDto } from './dto/answer-question.dto';
+import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(ClerkAuthGuard)
 @ApiBearerAuth()
 @Controller('questions')
 export class QuestionsController {

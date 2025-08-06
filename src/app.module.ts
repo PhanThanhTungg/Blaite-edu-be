@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { TopicsModule } from './modules/topics/topics.module';
@@ -11,6 +10,12 @@ import { GeminiModule } from './modules/gemini/gemini.module';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { EnvModule } from './shared/env/env.module';
 import { QuestionsModule } from './modules/questions/questions.module';
+import { ClerkModule } from './modules/clerk/clerk.module';
+import { ClerkClientProvider } from './modules/clerk/clerk.provider';
+import { APP_GUARD } from '@nestjs/core';
+import { ClerkAuthGuard } from './common/guards/clerk-auth.guard';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -32,14 +37,19 @@ import { QuestionsModule } from './modules/questions/questions.module';
       envFilePath: '.env',
     }),
     PrismaModule,
-    AuthModule,
     TopicsModule,
     KnowledgesModule,
     ClassesModule,
     GeminiModule,
     QuestionsModule,
+    ClerkModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ClerkClientProvider, {
+    provide: APP_GUARD,
+    useClass: ClerkAuthGuard,
+  }],
 })
 export class AppModule {}

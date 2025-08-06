@@ -2,14 +2,14 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } f
 import { KnowledgesService } from './knowledges.service';
 import { CreateKnowledgeDto } from './dto/create-knowledge.dto';
 import { Knowledge } from '@prisma/client';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from '@clerk/express';
+import { User } from '@prisma/client';
 import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(ClerkAuthGuard)
 @Controller('knowledges')
 export class KnowledgesController {
   constructor(private readonly knowledgesService: KnowledgesService) {}

@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { Topic, User } from '@prisma/client';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { TopicsService } from './topics.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { EditTopicDto } from './dto/edit-topic.dto';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
 
 @ApiBearerAuth()
 @Controller('topics')
-@UseGuards(JwtAuthGuard)
+@UseGuards(ClerkAuthGuard)
 export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 

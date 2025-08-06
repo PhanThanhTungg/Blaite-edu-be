@@ -7,12 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TypeAuth {
-  account
-  google
-  facebook
-}
-
 enum LevelClass {
   beginner
   elementary
@@ -34,19 +28,12 @@ enum TypeQuestion {
 
 model User {
   id             String     @id @default(uuid())
-  typeAuth       TypeAuth   @default(account)
-  googleId       String?    @unique
-  facebookId     String?    @unique
+  clerkId        String     @unique
   telegramId     String?    @unique
-  email          String?    @unique
-  password       String?
-  name           String?
-  avatarUrl      String?
-  phone          String?
+  prompt         String?
   timezone       String     @default("UTC")
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
-  prompt         String?
   classes        Class[]
   activities     Activity[]
   streak         Int?       @default(0)

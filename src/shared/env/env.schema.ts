@@ -1,7 +1,7 @@
 import { IsEnum, IsNumber, IsString, Max, Min } from 'class-validator'
 
 enum Environment {
-  development = 'development',
+  local = 'local',
   production = 'production',
 }
 
@@ -15,20 +15,10 @@ export class EnvSchema {
   PORT: number
 
   @IsString()
-  JWT_ACCESS_SECRET: string
+  CLERK_PUBLISHABLE_KEY: string
 
   @IsString()
-  JWT_ACCESS_EXPIRES: string
-
-  @IsString()
-  JWT_REFRESH_SECRET: string
-
-  @IsString()
-  JWT_REFRESH_EXPIRES: string
-
-  @IsNumber()
-  @Min(1)
-  COOKIE_HTTP_ONLY_EXPIRE: number
+  CLERK_SECRET_KEY: string
 
   @IsString()
   GEMINI_API_KEY: string

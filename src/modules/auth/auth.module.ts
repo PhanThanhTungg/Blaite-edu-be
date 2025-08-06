@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { LoginThrottlerGuard } from '../../common/guards/login-throttler.guard';
-import { JwtStrategy } from 'src/common/strategies/jwt.strategy';
+import { ClerkStrategy } from 'src/common/strategies/clerk.strategy';
+import { ClerkClientProvider } from '../clerk/clerk.provider';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [
     PassportModule,
-    JwtModule.register({})
+    UsersModule
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LoginThrottlerGuard],
-  exports: [AuthService]
+  providers: [ClerkStrategy, ClerkClientProvider],
+  exports: [PassportModule]
 })
-export class AuthModule { }
+export class AuthModule {}
