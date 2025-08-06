@@ -9,7 +9,7 @@ export class UsersService {
   async authUser(userRequest: any) {
     const user = await this.prisma.user.findUnique({
       where: {
-        clerkId: userRequest.id,
+        id: userRequest.id,
       },
     });
 
@@ -26,10 +26,10 @@ export class UsersService {
     return user;
   }
 
-  async getUserInfo(clerkId: string) {
+  async getUserInfo(id: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        clerkId,
+        id,
       },
     });
 

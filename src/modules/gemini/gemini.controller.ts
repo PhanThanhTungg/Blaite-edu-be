@@ -1,33 +1,27 @@
 import { Controller, Post, Body, Query, ValidationPipe, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth, ApiExcludeController } from '@nestjs/swagger';
 import { GeminiService } from './gemini.service';
 import { ChatRequestDto, ChatResponseDto, GenerateTextRequestDto, GenerateTextResponseDto } from './dto/gemini.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
-@ApiTags('Gemini AI')
-@ApiBearerAuth()
+@ApiExcludeController()
 @UseGuards(ClerkAuthGuard)
 @Controller('gemini')
 export class GeminiController {
   constructor(private readonly geminiService: GeminiService) {}
 
   @Post('chat')
-  @ApiOperation({ summary: 'Chat với Gemini AI' })
-  @ApiBody({ type: ChatRequestDto })
   async chat(@Body(ValidationPipe) chatRequest: ChatRequestDto): Promise<ChatResponseDto> {
     return await this.geminiService.chat(chatRequest);
   }
 
   @Post('generate')
-  @ApiOperation({ summary: 'Generate text với Gemini AI' })
-  @ApiBody({ type: GenerateTextRequestDto })
   async generateText(@Body(ValidationPipe) generateRequest: GenerateTextRequestDto): Promise<GenerateTextResponseDto> {
     return await this.geminiService.generateText(generateRequest);
   }
 
   @Post('generate-multiple')
-  @ApiOperation({ summary: 'Generate nhiều response cho cùng 1 prompt' })
   async generateMultiple(
     @Body('prompt') prompt: string,
     @Query('count') count?: number
@@ -37,7 +31,6 @@ export class GeminiController {
   }
 
   @Post('analyze-document')
-  @ApiOperation({ summary: 'Phân tích tài liệu PDF với Gemini AI' })
   @UseInterceptors(FileInterceptor('file'))
   async analyzeDocument(
     @UploadedFile() file: Express.Multer.File,

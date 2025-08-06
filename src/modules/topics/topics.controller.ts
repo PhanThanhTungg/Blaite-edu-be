@@ -4,7 +4,7 @@ import { TopicsService } from './topics.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { EditTopicDto } from './dto/edit-topic.dto';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery} from '@nestjs/swagger';
 import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
 
@@ -51,6 +51,8 @@ export class TopicsController {
   // POST: /topics/class/:id/generate
   @ApiOperation({ summary: 'Generate topics for a class' })
   @ApiParam({ name: 'id', description: 'ID of the class' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @ApiQuery({ name: 'maxTokens', description: 'Maximum number of tokens to generate' , example: 1000})
+  @ApiQuery({ name: 'temperature', description: 'Temperature for the model (0.0 - 1.0)' , example: 0.5})
   @Post('class/:id/generate')
   async generateTopic(
     @Param('id') classId: string,

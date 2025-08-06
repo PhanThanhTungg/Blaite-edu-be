@@ -14,7 +14,6 @@ export class ClassesController {
 
   constructor(private readonly classesService: ClassesService) {}
 
-
   // GET: /classes
   @ApiOperation({ summary: 'Get all classes' })
   @Get()

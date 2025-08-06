@@ -5,7 +5,7 @@ import { Knowledge } from '@prisma/client';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '@prisma/client';
 import { EditKnowledgeDto } from './dto/edit.knowledge.dto';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 
 @ApiBearerAuth()
@@ -47,6 +47,9 @@ export class KnowledgesController {
 
   // POST /knowledges/topic/:id/generate
   @ApiOperation({ summary: 'Generate knowledge points for a topic' })
+  @ApiParam({ name: 'id', description: 'ID of the topic' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @ApiQuery({ name: 'maxTokens', description: 'Maximum number of tokens to generate' , example: 1000})
+  @ApiQuery({ name: 'temperature', description: 'Temperature for the model (0.0 - 1.0)' , example: 0.5})
   @Post('topic/:id/generate')
   async generateKnowledge(
     @Param('id') topicId: string,
@@ -59,6 +62,9 @@ export class KnowledgesController {
 
   // POST /knowledges/:id/generate-theory
   @ApiOperation({ summary: 'Generate theory for a knowledge' })
+  @ApiParam({ name: 'id', description: 'ID of the knowledge' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @ApiQuery({ name: 'maxTokens', description: 'Maximum number of tokens to generate' , example: 1000})
+  @ApiQuery({ name: 'temperature', description: 'Temperature for the model (0.0 - 1.0)' , example: 0.5})
   @Post(':id/generate-theory')
   async generateTheory(
     @Param('id') knowledgeId: string,

@@ -29,13 +29,18 @@ export class ClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
     }
 
     try {
+      const enviroment = this.env.get('NODE_ENV');
+      if(enviroment === 'local') {
+        const userInfo = await this.usersService.getUserInfo('80147960-8d5a-4349-9d2d-acbd9f699609');
+        return userInfo;
+      }
       const tokenPayload = await verifyToken(token, {
         secretKey: this.env.get('CLERK_SECRET_KEY'),
       });
 
       const user = await this.clerkClient.users.getUser(tokenPayload.sub);
-      // const userInfo = await this.usersService.getUserInfo(user.id);
-      return user;
+      const userInfo = await this.usersService.getUserInfo(user.id);
+      return userInfo;
     } catch (error) {
       console.error(error);
       throw new UnauthorizedException('Invalid token');
