@@ -30,7 +30,7 @@ export class ClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
 
     try {
       const enviroment = this.env.get('NODE_ENV');
-      if(enviroment === 'local') {
+      if(enviroment === 'test') {
         const userInfo = await this.usersService.getUserInfo('80147960-8d5a-4349-9d2d-acbd9f699609');
         return userInfo;
       }

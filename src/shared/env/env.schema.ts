@@ -1,6 +1,7 @@
 import { IsEnum, IsNumber, IsString, Max, Min } from 'class-validator'
 
 enum Environment {
+  test = 'test',
   local = 'local',
   production = 'production',
 }
