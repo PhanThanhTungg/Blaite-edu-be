@@ -4,8 +4,9 @@ import { TopicsService } from './topics.service';
 import { CreateTopicDto } from './dto/create-topic.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { EditTopicDto } from './dto/edit-topic.dto';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse} from '@nestjs/swagger';
 import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
+import { ResponseTopicDto } from './dto/respone-topic.dto';
 
 
 @ApiBearerAuth()
@@ -17,22 +18,24 @@ export class TopicsController {
   // GET: /topics/:id
   @ApiOperation({ summary: 'Get a topic by ID' })
   @ApiParam({ name: 'id', description: 'ID of the topic' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @ApiResponse({ type: ResponseTopicDto })
   @Get(':id')
   async getTopic(
     @Param('id') topicId: string,
     @CurrentUser() user: User
-  ) : Promise<Topic> {
+  ) : Promise<ResponseTopicDto> {
     return this.topicsService.getTopic(topicId, user.id);
   }
 
   // GET: /topics/class/:id
   @ApiOperation({ summary: 'Get all topics for a class' })
   @ApiParam({ name: 'id', description: 'ID of the class' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
+  @ApiResponse({ type: ResponseTopicDto, isArray: true })
   @Get('class/:id')
   async getTopics(
     @Param('id') classId: string,
     @CurrentUser() user: User
-  ) : Promise<Topic[]> {
+  ) : Promise<ResponseTopicDto[]> {
     return this.topicsService.getTopics(classId, user.id);
   }
 

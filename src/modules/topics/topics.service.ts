@@ -10,22 +10,25 @@ import { ResponseTopicDto } from './dto/respone-topic.dto';
 @Injectable()
 export class TopicsService {
   constructor(
-    private readonly geminiService: GeminiService, 
-    private readonly prisma: PrismaService
+    private readonly geminiService: GeminiService,
+    private readonly prisma: PrismaService,
   ) {}
 
-  async getTopic(topicId: string, userId: string): Promise<Topic> {
+  async getTopic(topicId: string, userId: string): Promise<ResponseTopicDto> {
     return this.checkTopicBelongToUser(topicId, userId);
   }
 
-  async getTopics(classId: string, userId: string): Promise<any> {
+  async getTopics(
+    classId: string,
+    userId: string,
+  ): Promise<ResponseTopicDto[]> {
     const topics = await this.prisma.topic.findMany({
       where: {
         class: {
           userId: userId,
-          id: classId
+          id: classId,
         },
-        deleted: false
+        deleted: false,
       },
       orderBy: { createdAt: 'desc' },
       select: {
@@ -39,30 +42,48 @@ export class TopicsService {
         status: true,
         _count: {
           select: {
-            knowledges: true
-          }
+            knowledges: true,
+          },
         },
         knowledges: {
           select: {
             _count: {
               select: {
-                questions: true
-              }
+                questions: true,
+              },
             },
             questions: {
               select: {
                 type: true,
-                score: true
-              }
-            }
-          }
-        }
-      }
+                score: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     const responseTopics = topics.map((topic) => {
-      const listQuestionPractice = topic.knowledges[0]?.questions.filter((question) => question.type === "practice");
-      const listQuestionTheory = topic.knowledges[0]?.questions.filter((question) => question.type === "theory");
+      const listQuestionPractice: any = [];
+      topic.knowledges
+        .filter((knowledge) => knowledge.questions.length > 0)
+        .forEach((knowledge) => {
+          knowledge.questions
+            .filter((question) => question.type === 'practice')
+            .forEach((question) => {
+              listQuestionPractice.push(question);
+            });
+        });
+      const listQuestionTheory: any = [];
+      topic.knowledges
+        .filter((knowledge) => knowledge.questions.length > 0)
+        .forEach((knowledge) => {
+          knowledge.questions
+            .filter((question) => question.type === 'theory')
+            .forEach((question) => {
+              listQuestionTheory.push(question);
+            });
+        });
       const res: ResponseTopicDto = {
         id: topic.id,
         name: topic.name,
@@ -73,51 +94,75 @@ export class TopicsService {
         updatedAt: topic.updatedAt,
         status: topic.status,
         totalKnowledge: topic._count.knowledges,
-        totalQuestion: topic.knowledges.reduce((acc, knowledge) => acc + knowledge._count.questions, 0),
-        avgScorePractice: listQuestionPractice ? listQuestionPractice.reduce((acc, question) => acc + (question.score || 0), 0) / listQuestionPractice.length : 0,
-        avgScoreTheory: listQuestionTheory ? listQuestionTheory.reduce((acc, question) => acc + (question.score || 0), 0) / listQuestionTheory.length : 0,
-      }
+        totalQuestion: topic.knowledges.reduce(
+          (acc, knowledge) => acc + knowledge._count.questions,
+          0,
+        ),
+        avgScorePractice: listQuestionPractice
+          ? listQuestionPractice.reduce(
+              (acc, question) => acc + (question.score || 0),
+              0,
+            ) / listQuestionPractice.length
+          : 0,
+        avgScoreTheory: listQuestionTheory
+          ? listQuestionTheory.reduce(
+              (acc, question) => acc + (question.score || 0),
+              0,
+            ) / listQuestionTheory.length
+          : 0,
+      };
       return res;
     });
 
     return responseTopics;
   }
 
-  async createTopic(topic: CreateTopicDto, classId: string, userId: string): Promise<Topic> {
+  async createTopic(
+    topic: CreateTopicDto,
+    classId: string,
+    userId: string,
+  ): Promise<Topic> {
     await this.checkClassBelongToUser(classId, userId);
     const newTopic = await this.prisma.topic.create({
       data: {
         name: topic.name,
         prompt: topic.prompt,
-        classId
+        classId,
       },
     });
     return newTopic;
   }
 
-  async generateTopic(classId: string, userId: string, maxTokens: number, temperature: number): Promise<Topic[]> {
+  async generateTopic(
+    classId: string,
+    userId: string,
+    maxTokens: number,
+    temperature: number,
+  ): Promise<Topic[]> {
     const classFound = await this.checkClassBelongToUser(classId, userId);
     const prompt = generateTopicPrompt(classFound, maxTokens);
     const response = await this.geminiService.generateText({
       prompt,
       maxTokens,
-      temperature
+      temperature,
     });
 
     await this.prisma.topic.deleteMany({
       where: {
-        classId: classId
-      }
+        classId: classId,
+      },
     });
 
     const responseAPI: Topic[] = [];
-    const result = JSON.parse(response.text.replace(/^.*\n/, '').replace(/\n.*$/, ''));
+    const result = JSON.parse(
+      response.text.replace(/^.*\n/, '').replace(/\n.*$/, ''),
+    );
     for (const topic of result) {
       const newTopic = await this.prisma.topic.create({
         data: {
           name: topic.name,
           prompt: topic.prompt,
-          classId
+          classId,
         },
       });
       responseAPI.push(newTopic);
@@ -125,7 +170,11 @@ export class TopicsService {
     return responseAPI;
   }
 
-  async editTopic(topicId: string, topic: EditTopicDto, userId: string): Promise<Topic> {
+  async editTopic(
+    topicId: string,
+    topic: EditTopicDto,
+    userId: string,
+  ): Promise<Topic> {
     const updatedTopic = await this.prisma.topic.update({
       where: { id: topicId, class: { userId: userId }, deleted: false },
       data: topic,
@@ -140,12 +189,15 @@ export class TopicsService {
     return deletedTopic;
   }
 
-  private async checkTopicBelongToUser(topicId: string, userId: string): Promise<ResponseTopicDto> {
+  private async checkTopicBelongToUser(
+    topicId: string,
+    userId: string,
+  ): Promise<ResponseTopicDto> {
     const topic = await this.prisma.topic.findUnique({
-      where: { 
-        id: topicId, 
+      where: {
+        id: topicId,
         class: { userId: userId },
-        deleted: false
+        deleted: false,
       },
       select: {
         id: true,
@@ -158,31 +210,50 @@ export class TopicsService {
         status: true,
         _count: {
           select: {
-            knowledges: true
-          }
+            knowledges: true,
+          },
         },
         knowledges: {
           select: {
             _count: {
               select: {
-                questions: true
-              }
+                questions: true,
+              },
             },
             questions: {
               select: {
                 type: true,
-                score: true
-              }
-            }
-          }
-        }
-      }
+                score: true,
+              },
+            },
+          },
+        },
+      },
     });
+
     if (!topic) {
       throw new NotFoundException('Topic not found');
     }
-    const listQuestionPractice = topic.knowledges[0]?.questions.filter((question) => question.type === "practice");
-    const listQuestionTheory = topic.knowledges[0]?.questions.filter((question) => question.type === "theory");
+    const listQuestionPractice: any = [];
+    topic.knowledges
+      .filter((knowledge) => knowledge.questions.length > 0)
+      .forEach((knowledge) => {
+        knowledge.questions
+          .filter((question) => question.type === 'practice')
+          .forEach((question) => {
+            listQuestionPractice.push(question);
+          });
+      });
+    const listQuestionTheory: any = [];
+    topic.knowledges
+      .filter((knowledge) => knowledge.questions.length > 0)
+      .forEach((knowledge) => {
+        knowledge.questions
+          .filter((question) => question.type === 'theory')
+          .forEach((question) => {
+            listQuestionTheory.push(question);
+          });
+      });
     const res: ResponseTopicDto = {
       id: topic.id,
       name: topic.name,
@@ -193,14 +264,30 @@ export class TopicsService {
       updatedAt: topic.updatedAt,
       status: topic.status,
       totalKnowledge: topic._count.knowledges,
-      totalQuestion: topic.knowledges.reduce((acc, knowledge) => acc + knowledge._count.questions, 0),
-      avgScorePractice: listQuestionPractice ? listQuestionPractice.reduce((acc, question) => acc + (question.score || 0), 0) / listQuestionPractice.length : 0,
-      avgScoreTheory: listQuestionTheory ? listQuestionTheory.reduce((acc, question) => acc + (question.score || 0), 0) / listQuestionTheory.length : 0,
-    }
+      totalQuestion: topic.knowledges.reduce(
+        (acc, knowledge) => acc + knowledge._count.questions,
+        0,
+      ),
+      avgScorePractice: listQuestionPractice
+        ? listQuestionPractice.reduce(
+            (acc, question) => acc + (question.score || 0),
+            0,
+          ) / listQuestionPractice.length
+        : 0,
+      avgScoreTheory: listQuestionTheory
+        ? listQuestionTheory.reduce(
+            (acc, question) => acc + (question.score || 0),
+            0,
+          ) / listQuestionTheory.length
+        : 0,
+    };
     return res;
   }
 
-  private async checkTopicBelongToClass(topicId: string, classId: string): Promise<Topic> {
+  private async checkTopicBelongToClass(
+    topicId: string,
+    classId: string,
+  ): Promise<Topic> {
     const topic = await this.prisma.topic.findUnique({
       where: { id: topicId, classId: classId },
     });
@@ -210,7 +297,11 @@ export class TopicsService {
     return topic;
   }
 
-  private async checkTopicBelongToUserAndClass(topicId: string, userId: string, classId: string): Promise<Topic> {
+  private async checkTopicBelongToUserAndClass(
+    topicId: string,
+    userId: string,
+    classId: string,
+  ): Promise<Topic> {
     const topic = await this.prisma.topic.findUnique({
       where: { id: topicId, class: { userId: userId, id: classId } },
     });
@@ -220,7 +311,10 @@ export class TopicsService {
     return topic;
   }
 
-  private async checkClassBelongToUser(classId: string, userId: string): Promise<Class> {
+  private async checkClassBelongToUser(
+    classId: string,
+    userId: string,
+  ): Promise<Class> {
     const classFound = await this.prisma.class.findUnique({
       where: { id: classId, userId: userId },
     });
