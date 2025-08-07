@@ -31,7 +31,7 @@ export class QuestionsController {
     @Param('id') questionId: string,
     @Body() body: AnswerQuestionDto,
     @CurrentUser() user: User
-  ): Promise<Question> {
-    return this.questionsService.answerQuestion(questionId, body, user.id);
+  ): Promise<any> {
+    return this.questionsService.answerQuestion(questionId, body, user);
   }
 }

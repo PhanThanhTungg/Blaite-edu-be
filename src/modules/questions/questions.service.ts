@@ -3,7 +3,7 @@ import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { GeminiService } from '../gemini/gemini.service';
 import { EnvService } from 'src/shared/env/env.service';
 import { AnswerQuestionDto } from './dto/answer-question.dto';
-import { Question, TypeQuestion } from '@prisma/client';
+import { Prisma, Question, TypeQuestion, User } from '@prisma/client';
 import { generateQuestionPrompt } from 'src/assets/prompts/questions/generate-question.prompt';
 
 @Injectable()
@@ -11,55 +11,66 @@ export class QuestionsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly geminiService: GeminiService,
-    private readonly envService: EnvService
+    private readonly envService: EnvService,
   ) {}
 
-  async createQuestion(knowledgeId: string, userId: string, typeQuestion: TypeQuestion): Promise<any> {
+  async createQuestion(
+    knowledgeId: string,
+    userId: string,
+    typeQuestion: TypeQuestion,
+  ): Promise<any> {
     const knowledge = await this.getKnowledge(knowledgeId, userId);
 
     const checkAnswerPre = await this.prisma.question.findMany({
       where: {
         knowledgeId: knowledgeId,
         type: typeQuestion,
-        answer: null
-      }
-    })
-    if(checkAnswerPre.length > 0) throw new BadRequestException('Have question not answer');
+        answer: null,
+      },
+    });
+    if (checkAnswerPre.length > 0)
+      throw new BadRequestException('Have question not answer');
 
     if (checkAnswerPre.length > 0) {
       return checkAnswerPre[0];
     }
-      
+
     const historyQuestion = await this.prisma.question.findMany({
       where: {
         knowledgeId: knowledgeId,
         type: typeQuestion,
         answer: {
-          not: null
+          not: null,
         },
         score: {
-          not: null
+          not: null,
         },
-        explain:{
-          not: null
-,       },
-        ...(typeQuestion === TypeQuestion.theory && { aiFeedback: {
-          not: null
-        }})
+        explain: {
+          not: null,
+        },
+        ...(typeQuestion === TypeQuestion.theory && {
+          aiFeedback: {
+            not: null,
+          },
+        }),
       },
-      select:{
+      select: {
         content: true,
         answer: true,
-        aiFeedback: true
-      }
+        aiFeedback: true,
+      },
     });
 
-    const prompt = generateQuestionPrompt(knowledge, historyQuestion, typeQuestion);
+    const prompt = generateQuestionPrompt(
+      knowledge,
+      historyQuestion,
+      typeQuestion,
+    );
 
     const response = await this.geminiService.generateText({
       prompt,
       maxTokens: this.envService.get('GEMINI_MAX_TOKEN'),
-      temperature: this.envService.get('GEMINI_TEMPERATURE')
+      temperature: this.envService.get('GEMINI_TEMPERATURE'),
     });
     const question = response.text;
 
@@ -67,26 +78,32 @@ export class QuestionsService {
       data: {
         content: question,
         knowledgeId: knowledgeId,
-        type: typeQuestion
-      }
+        type: typeQuestion,
+      },
     });
     return questionCreated;
   }
 
-  async answerQuestion(questionId: string, body: AnswerQuestionDto, userId: string): Promise<Question> {
-    const question = await this.getQuestion(questionId, userId);
-    if(question.answer !== null) throw new BadRequestException('Question already answered');
+  async answerQuestion(
+    questionId: string,
+    body: AnswerQuestionDto,
+    user: User,
+  ): Promise<any> {
+    const question = await this.getQuestion(questionId, user.id);
+    if (question.answer !== null)
+      throw new BadRequestException('Question already answered');
 
-    const subTask = question.type === TypeQuestion.theory ? 
-      `
+    const subTask =
+      question.type === TypeQuestion.theory
+        ? `
         - 0 điểm: Sai hoàn toàn, không liên quan
         - 1-25 điểm: Gần đúng/đoán đúng 1 phần nhỏ
         - 26-50 điểm: Có ý đúng nhưng thiếu/thiếu rõ ràng
         - 51-75 điểm: Gần đúng toàn bộ, chỉ thiếu vài chi tiết nhỏ
         - 76-99 điểm: Gần như đúng hoàn toàn, chỉ sai rất nhỏ (chính tả, ngữ pháp nhẹ,...)
         - 100 điểm: Đúng tuyệt đối, đầy đủ, rõ ràng
-      ` : 
       `
+        : `
         - 0 điểm: sai
         - 100 điểm : đúng
       `;
@@ -114,43 +131,53 @@ export class QuestionsService {
     const response = await this.geminiService.generateText({
       prompt,
       maxTokens: this.envService.get('GEMINI_MAX_TOKEN'),
-      temperature: this.envService.get('GEMINI_TEMPERATURE')
+      temperature: this.envService.get('GEMINI_TEMPERATURE'),
     });
-    const answer = JSON.parse(response.text.replace('```json', '').replace('```', ''));
+    const answer = JSON.parse(
+      response.text.replace('```json', '').replace('```', ''),
+    );
 
-    const updatedQuestion = await this.prisma.question.update({
-      where: { id: questionId },
-      data: {
-        answer: body.answer,
-        score: answer.score,
-        explain: answer.explain,
-        ...(question.type === TypeQuestion.theory && { aiFeedback: answer.aiFeedback })
-      }
+    return await this.prisma.$transaction(async (tx) => {
+      const updatedQuestion = await tx.question.update({
+        where: { id: questionId },
+        data: {
+          answer: body.answer,
+          score: answer.score,
+          explain: answer.explain,
+          ...(question.type === TypeQuestion.theory && {
+            aiFeedback: answer.aiFeedback,
+          }),
+        },
+      });
+      await this.updateActivity(user, tx);
+
+      return updatedQuestion;
     });
-
-    return updatedQuestion;
   }
 
-  private async getKnowledge(knowledgeId: string, userId: string): Promise<any> {
+  private async getKnowledge(
+    knowledgeId: string,
+    userId: string,
+  ): Promise<any> {
     const knowledge = await this.prisma.knowledge.findUnique({
       where: {
         id: knowledgeId,
         topic: {
           class: {
             user: {
-              id: userId
-            }
-          }
-        }
+              id: userId,
+            },
+          },
+        },
       },
       include: {
         topic: {
           include: {
-            class: true
-          }
+            class: true,
+          },
         },
-        questions: true
-      }
+        questions: true,
+      },
     });
     return knowledge;
   }
@@ -163,23 +190,83 @@ export class QuestionsService {
           topic: {
             class: {
               user: {
-                id: userId
-              }
-            }
-          }
-        }
+                id: userId,
+              },
+            },
+          },
+        },
       },
       include: {
         knowledge: {
           include: {
             topic: {
               include: {
-                class: true
-              }
-            }
-          }
-        }
-      }
+                class: true,
+              },
+            },
+          },
+        },
+      },
     });
     return question;
-  }}
+  }
+
+  private async updateActivity(
+    user: User,
+    tx: Prisma.TransactionClient,
+  ): Promise<void> {
+    const dateNow = new Date().toLocaleDateString('sv-SE', {
+      timeZone: user.timezone,
+    });
+
+    const activity = await tx.activity.findFirst({
+      where: {
+        userId: user.id,
+        date: dateNow,
+      },
+    });
+
+    if (!activity) {
+      await tx.activity.create({
+        data: {
+          userId: user.id,
+          date: dateNow,
+          count: 1,
+        },
+      });
+      const checkYesterday = await tx.activity.findFirst({
+        where: {
+          userId: user.id,
+          date: new Date(
+            new Date().setDate(new Date().getDate() - 1),
+          ).toLocaleDateString('sv-SE', { timeZone: user.timezone }),
+        },
+      });
+      if (checkYesterday) {
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            streak: user.streak + 1,
+            ...(user.streak + 1 > user.longestStreak && {
+              longestStreak: user.streak + 1,
+            }),
+          },
+        });
+      } else {
+        await tx.user.update({
+          where: { id: user.id },
+          data: {
+            streak: 1,
+            lastActiveDate: new Date(dateNow),
+            ...(user.longestStreak == 0 && { longestStreak: 1 }),
+          },
+        });
+      }
+    } else {
+      await tx.activity.update({
+        where: { id: activity.id },
+        data: { count: activity.count + 1 },
+      });
+    }
+  }
+}

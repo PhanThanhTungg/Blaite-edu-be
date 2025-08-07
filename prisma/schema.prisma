@@ -31,12 +31,13 @@ model User {
   clerkId        String     @unique
   telegramId     String?    @unique
   prompt         String?
-  timezone       String     @default("UTC")
+  timezone       String     @default("Asia/Ho_Chi_Minh")
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   classes        Class[]
   activities     Activity[]
-  streak         Int?       @default(0)
+  streak         Int        @default(0)
+  longestStreak  Int        @default(0)
   lastActiveDate DateTime?
  
   @@map("users")
@@ -112,8 +113,8 @@ model Activity {
   id        String   @id @default(uuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id])
-  date      DateTime
-  timezone  String   @default("UTC")
+  date      String
+  timezone  String   @default("Asia/Ho_Chi_Minh")
   count     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
