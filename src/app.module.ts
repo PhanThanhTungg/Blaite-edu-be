@@ -16,6 +16,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { ClerkAuthGuard } from './common/guards/clerk-auth.guard';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { TelegramModule } from './modules/bot/telegram/telegram.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { AuthModule } from './modules/auth/auth.module';
     ClerkModule,
     UsersModule,
     AuthModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService, ClerkClientProvider, {
