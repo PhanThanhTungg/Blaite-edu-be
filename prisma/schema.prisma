@@ -21,6 +21,11 @@ enum StatusClass {
   public
 }
 
+enum Status{
+  active
+  inactive
+}
+
 enum TypeQuestion {
   theory
   practice
@@ -67,6 +72,7 @@ model Topic {
   deleted     Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  status      Status      @default(active)
   class       Class       @relation(fields: [classId], references: [id], onDelete: Cascade)
   knowledges  Knowledge[]
 
@@ -84,8 +90,8 @@ model Knowledge {
   prompt    String     @default("Không có mô tả")
   theory    String?
   reviewAt  DateTime?  
-  avgScore  Int        @default(0) 
   deleted   Boolean    @default(false)
+  status    Status     @default(active)
   createdAt DateTime   @default(now()) 
   updatedAt DateTime   @updatedAt 
   questions Question[]
