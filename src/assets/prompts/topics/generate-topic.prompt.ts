@@ -14,6 +14,7 @@ export const generateTopicPrompt = (classFound: Class, maxTokens: number) => {
     2. Có tính logic và trình tự phù hợp
     3. Phù hợp với trình độ và mục tiêu của lớp học
     4. Các chủ để phải đủ lớn để học sinh có thể học tập hiệu quả
+    5. Các chủ đề phải nằm trong phạm vi mà bạn hoặc mô hình LLMs khác có thể thiết kế được 
 
     YÊU CẦU ĐẦU RA:
     1. Trả về CHÍNH XÁC định dạng JSON array

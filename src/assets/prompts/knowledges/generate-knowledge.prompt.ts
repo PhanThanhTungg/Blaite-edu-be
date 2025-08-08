@@ -1,7 +1,7 @@
 import { Topic } from '@prisma/client';
 
 export const generateKnowledgePrompt = (topic: Topic, maxTokens: number) => {
-  return `
+  const prompt = `
     Bạn là một chuyên gia giáo dục có kinh nghiệm thiết kế chương trình học.
 
     THÔNG TIN LỚP HỌC:
@@ -24,9 +24,10 @@ export const generateKnowledgePrompt = (topic: Topic, maxTokens: number) => {
     3. Cấu trúc từ tổng quát đến chi tiết (có thể 3-4 cấp độ nếu bạn thấy cần thiết)
     4. Đảm bảo độ dài phản hồi < ${maxTokens} tokens
     5. Ưu tiên chất lượng nội dung hơn số lượng
-    6. LUÔN kết thúc bằng "]" để hoàn thiện JSON
+    6. LUÔN bắt đầu bằng "[" và kết thúc bằng "]" để hoàn thiện JSON
 
     VÍ DỤ ĐỊNH DẠNG:
     [{"name":"Kiến thức nền tảng","prompt":"Các khái niệm cơ bản...","children":[{"name":"Khái niệm A","prompt":"Chi tiết về...","children":[]}]}]
   `
+  return prompt;
 };

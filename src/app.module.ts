@@ -17,6 +17,7 @@ import { ClerkAuthGuard } from './common/guards/clerk-auth.guard';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TelegramModule } from './modules/bot/telegram/telegram.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { TelegramModule } from './modules/bot/telegram/telegram.module';
     UsersModule,
     AuthModule,
     TelegramModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService, ClerkClientProvider, {

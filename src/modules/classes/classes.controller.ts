@@ -4,8 +4,9 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '@prisma/client';
 import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
-import { ApiBearerAuth, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
+import { ResponseClassDto } from './dto/response-class.dto';
 
 @ApiBearerAuth()
 @Controller('classes')
@@ -16,17 +17,18 @@ export class ClassesController {
 
   // GET: /classes
   @ApiOperation({ summary: 'Get all classes' })
+  @ApiResponse({ type: ResponseClassDto, isArray: true })
   @Get()
-  async getAllClasses(@CurrentUser() user: User) {
-    console.log("user", user);
+  async getAllClasses(@CurrentUser() user: User): Promise<ResponseClassDto[]> {
     return this.classesService.getAllClasses(user.id);
   }
 
   // GET: /classes/:id
   @ApiOperation({ summary: 'Get one class' })
   @ApiParam({ name: 'id', description: 'The id of the class' })
+  @ApiResponse({ type: ResponseClassDto })
   @Get(':id')
-  async getOneClass(@Param('id') id: string, @CurrentUser() user: User) {
+  async getOneClass(@Param('id') id: string, @CurrentUser() user: User): Promise<ResponseClassDto> {
     return this.classesService.getOneClass(id, user.id);
   }
 
