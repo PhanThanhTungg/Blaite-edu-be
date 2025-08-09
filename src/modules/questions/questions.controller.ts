@@ -11,14 +11,14 @@ import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 @Controller('questions')
 export class QuestionsController {
 
-  constructor(private readonly questionsService: QuestionsService) {}
+  constructor(private readonly questionsService: QuestionsService) { }
 
   @ApiOperation({ summary: 'Generate a question based on knowledge and type' })
-  @ApiParam({ name: 'id', description: 'ID of the knowledge' , example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9'})
-  @ApiParam({ name: 'typeQuestion', description: 'theory || practice' , example: 'theory'})
+  @ApiParam({ name: 'id', description: 'ID of the knowledge', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
+  @ApiParam({ name: 'typeQuestion', description: 'theory || practice', example: 'theory' })
   @Post('knowledge/:id/generate/:typeQuestion')
   async generateQuestion(
-    @Param('id') knowledgeId: string, 
+    @Param('id') knowledgeId: string,
     @Param('typeQuestion', new ParseEnumPipe(TypeQuestion)) typeQuestion: TypeQuestion,
     @CurrentUser() user: User
   ): Promise<any> {
@@ -26,11 +26,11 @@ export class QuestionsController {
   }
 
 
-  @ApiOperation({ summary: 'Get a question not answer' })
-  @Get('not-answer')
-  async getQuestionNotAnswer(@CurrentUser() user: User): Promise<any> {
-    return this.questionsService.getQuestionNotAnswer(user.id);
-  }
+  // @ApiOperation({ summary: 'Get a question not answer' })
+  // @Get('not-answer')
+  // async getQuestionNotAnswer(@CurrentUser() user: User): Promise<any> {
+  //   return this.questionsService.getQuestionNotAnswer(user.id);
+  // }
 
   @ApiOperation({ summary: 'Answer a question' })
   @Post('answer/:id')
@@ -44,20 +44,20 @@ export class QuestionsController {
 
 
   @ApiOperation({ summary: 'Get latest unanswered question by knowledge and type' })
-@ApiParam({ name: 'knowledgeId', description: 'ID of the knowledge', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
-@ApiParam({ name: 'typeQuestion', description: 'theory || practice', example: 'theory' })
-@Get('knowledge/:knowledgeId/latest-unanswered/:typeQuestion')
-async getLatestUnansweredQuestion(
-  @Param('knowledgeId') knowledgeId: string,
-  @Param('typeQuestion', new ParseEnumPipe(TypeQuestion)) typeQuestion: TypeQuestion,
-  @CurrentUser() user: User
-): Promise<any> {
-  return this.questionsService.getLatestUnansweredQuestionByKnowledge(
-    knowledgeId,
-    typeQuestion,
-    user.id,
-  );
-}
+  @ApiParam({ name: 'knowledgeId', description: 'ID of the knowledge', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
+  @ApiParam({ name: 'typeQuestion', description: 'theory || practice', example: 'theory' })
+  @Get('knowledge/:knowledgeId/latest-unanswered/:typeQuestion')
+  async getLatestUnansweredQuestion(
+    @Param('knowledgeId') knowledgeId: string,
+    @Param('typeQuestion', new ParseEnumPipe(TypeQuestion)) typeQuestion: TypeQuestion,
+    @CurrentUser() user: User
+  ): Promise<any> {
+    return this.questionsService.getLatestUnansweredQuestionByKnowledge(
+      knowledgeId,
+      typeQuestion,
+      user.id,
+    );
+  }
 
 
 }
