@@ -18,6 +18,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TelegramModule } from './modules/bot/telegram/telegram.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleService } from './modules/schedule/schedule.service';
 
 @Module({
   imports: [
@@ -38,6 +40,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     TopicsModule,
     KnowledgesModule,
@@ -49,11 +52,14 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     AuthModule,
     TelegramModule,
     DashboardModule,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService, ClerkClientProvider, {
     provide: APP_GUARD,
     useClass: ClerkAuthGuard,
-  }],
+  },
+  ScheduleService
+],
 })
 export class AppModule {}

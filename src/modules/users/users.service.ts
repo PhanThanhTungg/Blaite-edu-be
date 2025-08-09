@@ -18,23 +18,44 @@ export class UsersService  {
   authUser(userRequest: Request) {
   }
 
-  async getUserInfo(id: string) {
+  async getUserInfo(clerkId: string) {
     const user = await this.prisma.user.findUnique({
       where: {
-        clerkId: id,
+        clerkId,
       },
     });
 
     if (!user){
       const newUser = await this.prisma.user.create({
         data: {
-          clerkId: id,
+          clerkId,
         },
       });
       return newUser;
     }
 
     return user;
+  }
+
+  async checkUserById(id: string): Promise<User | null>{
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id
+      },
+    });
+    if(!user) return null;
+    return user;
+  }
+
+  async setTelegramId(id: string, telegramId: string){
+    const user = await this.prisma.user.update({
+      where: {
+        id
+      },
+      data: {
+        telegramId
+      }
+    });
   }
 
 }
