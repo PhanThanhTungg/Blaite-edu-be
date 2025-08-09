@@ -43,6 +43,7 @@ model User {
   activities     Activity[]
   intervalSendMessage Int?
   scheduleKnowledgesId String?
+  scheduleTypeQuestion TypeQuestion?
   scheduleKnowledges Knowledge? @relation(fields: [scheduleKnowledgesId], references: [id])
   streak         Int        @default(0)
   longestStreak  Int        @default(0)

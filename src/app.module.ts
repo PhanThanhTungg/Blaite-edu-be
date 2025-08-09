@@ -19,7 +19,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { TelegramModule } from './modules/bot/telegram/telegram.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ScheduleService } from './modules/schedule/schedule.service';
+import { ScheduleModule as ScheduleModule2 } from './modules/schedule/schedule.module';
 
 @Module({
   imports: [
@@ -52,14 +52,14 @@ import { ScheduleService } from './modules/schedule/schedule.service';
     AuthModule,
     TelegramModule,
     DashboardModule,
+    ScheduleModule2,
     ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService, ClerkClientProvider, {
     provide: APP_GUARD,
     useClass: ClerkAuthGuard,
-  },
-  ScheduleService
+  }
 ],
 })
 export class AppModule {}
