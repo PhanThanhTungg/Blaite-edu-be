@@ -12,7 +12,7 @@ export class TelegramController {
 
   @Post('webhook')
   async handleUpdate(@Body() update: any) {
-    this.telegramService.handleUpdate(update);
+    this.telegramService.handleUpdate(update.message);
     return 'ok';
   }
 

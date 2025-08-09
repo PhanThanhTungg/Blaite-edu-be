@@ -4,6 +4,7 @@ import { User } from '@prisma/client';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { TelegramService } from '../bot/telegram/telegram.service';
 import { QuestionsService } from '../questions/questions.service';
+import { EnvService } from 'src/shared/env/env.service';
 
 @Injectable()
 export class ScheduleService {
@@ -11,6 +12,7 @@ export class ScheduleService {
     private readonly prisma: PrismaService,
     private readonly telegramService: TelegramService,
     private readonly questionsService: QuestionsService,
+    private readonly envService: EnvService,
   ) {}
 
   @Cron(CronExpression.EVERY_MINUTE)
@@ -18,8 +20,9 @@ export class ScheduleService {
     const now = new Date();
     const hour = now.getHours();
     const minute = now.getMinutes();
-    if (hour < 6) return;
+    if (hour < 0) return;
     const totalMinutes = (hour - 6) * 60 + minute;
+
     const users: any = await this.prisma.$queryRaw`
       SELECT * FROM users 
       WHERE "telegramId" IS NOT NULL 
@@ -43,7 +46,7 @@ export class ScheduleService {
           );
         } catch (error) {
           console.log("error schedule service")
-          if (error?.response?.message === 'Have question not answer')
+          if (error?.response?.message === 'There is already an unanswered question for this knowledge and type')
             this.telegramService.sendMessage(
               user.telegramId,
               'Bạn có câu hỏi chưa trả lời, vui lòng trả lời câu hỏi trước khi nhận câu hỏi mới',

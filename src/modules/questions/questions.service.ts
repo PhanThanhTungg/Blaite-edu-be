@@ -54,7 +54,7 @@ export class QuestionsService {
   ): Promise<any> {
     const knowledge = await this.getKnowledge(knowledgeId, userId);
 
-    const existingUnanswered = await this.prisma.question.findFirst({
+    const existingUnanswered = await prismaClient.question.findFirst({
       where: {
         knowledgeId,
         type: typeQuestion,
@@ -66,7 +66,7 @@ export class QuestionsService {
             },
           },
         },
-      },
+      }
     });
 
     if (existingUnanswered) {

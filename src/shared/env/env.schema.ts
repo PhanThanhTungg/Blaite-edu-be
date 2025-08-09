@@ -38,4 +38,9 @@ export class EnvSchema {
 
   @IsString()
   DEPLOY_URL: string
+
+  @IsNumber()
+  @Min(0)
+  @Max(23)
+  HOUR_STOP_SEND_QUESTION: number
 }

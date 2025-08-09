@@ -17,14 +17,14 @@ export class TelegramService {
     private readonly prisma: PrismaService,
   ) {
     this.bot = new TelegramBot(envService.get('TELE_BOT_TOKEN'), {
-      polling: true,
+      webhook: true
     });
-    // let url = envService.get('DEPLOY_URL');
-    // this.bot.setWebHook(`${envService.get('DEPLOY_URL')}/telegram/webhook`);
-    this.bot.on('message', (msg) => {
-      console.log('Received message:', msg);
-      this.handleUpdate(msg);
-    });
+    let url = envService.get('DEPLOY_URL');
+    this.bot.setWebHook(`${envService.get('DEPLOY_URL')}/telegram/webhook`);
+    // this.bot.on('message', (msg) => {
+    //   console.log('Received message:', msg);
+    //   this.handleUpdate(msg);
+    // });
   }
 
   async handleUpdate(message: any) {
@@ -76,7 +76,7 @@ export class TelegramService {
               { answer: text },
               user,
             );
-            this.bot.sendMessage(
+             this.bot.sendMessage(
               chatId,
               `<b>Điểm:</b> ${questionAnswered.score}\n <b>Giải thích:</b> ${questionAnswered.explain}\n` +
                 `<b>AI Feedback:</b> ${questionAnswered.aiFeedback}`,
