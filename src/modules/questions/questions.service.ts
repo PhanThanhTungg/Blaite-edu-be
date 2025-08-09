@@ -23,17 +23,20 @@ export class QuestionsService {
 
     const checkAnswerPre = await this.prisma.question.findMany({
       where: {
-        knowledgeId: knowledgeId,
-        type: typeQuestion,
+        knowledge: {
+          topic: {
+            class: {
+              user: {
+                id: userId,
+              },
+            },
+          },
+        },
         answer: null,
       },
     });
     if (checkAnswerPre.length > 0)
       throw new BadRequestException('Have question not answer');
-
-    if (checkAnswerPre.length > 0) {
-      return checkAnswerPre[0];
-    }
 
     const historyQuestion = await this.prisma.question.findMany({
       where: {
@@ -82,6 +85,24 @@ export class QuestionsService {
       },
     });
     return questionCreated;
+  }
+
+  async getQuestionNotAnswer(userId: string): Promise<any> {
+    const questions = await this.prisma.question.findFirst({
+      where: {
+        knowledge: {
+          topic: {
+            class: {
+              user: {
+                id: userId,
+              },
+            },
+          },
+        },
+        answer: null,
+      },
+    });
+    return questions;
   }
 
   async answerQuestion(

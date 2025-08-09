@@ -1,4 +1,4 @@
-import { Body, Controller, Param, ParseEnumPipe, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseEnumPipe, Post, UseGuards } from '@nestjs/common';
 import { QuestionsService } from './questions.service';
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -23,6 +23,13 @@ export class QuestionsController {
     @CurrentUser() user: User
   ): Promise<any> {
     return this.questionsService.createQuestion(knowledgeId, user.id, typeQuestion);
+  }
+
+
+  @ApiOperation({ summary: 'Get a question not answer' })
+  @Get('not-answer')
+  async getQuestionNotAnswer(@CurrentUser() user: User): Promise<any> {
+    return this.questionsService.getQuestionNotAnswer(user.id);
   }
 
   @ApiOperation({ summary: 'Answer a question' })
