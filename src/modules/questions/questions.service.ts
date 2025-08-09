@@ -14,78 +14,114 @@ export class QuestionsService {
     private readonly envService: EnvService,
   ) {}
 
-  async createQuestion(
-    knowledgeId: string,
-    userId: string,
-    typeQuestion: TypeQuestion,
-  ): Promise<any> {
-    const knowledge = await this.getKnowledge(knowledgeId, userId);
 
-    const checkAnswerPre = await this.prisma.question.findMany({
-      where: {
-        knowledge: {
-          topic: {
-            class: {
-              user: {
-                id: userId,
-              },
-            },
+   async getLatestUnansweredQuestionByKnowledge(
+  knowledgeId: string,
+  typeQuestion: TypeQuestion,
+  userId: string,
+): Promise<any> {
+  const question = await this.prisma.question.findFirst({
+    where: {
+      knowledgeId,
+      type: typeQuestion,
+      answer: null,
+      knowledge: {
+        topic: {
+          class: {
+            user: { id: userId },
           },
         },
-        answer: null,
       },
-    });
-    if (checkAnswerPre.length > 0)
-      throw new BadRequestException('Have question not answer');
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
 
-    const historyQuestion = await this.prisma.question.findMany({
-      where: {
-        knowledgeId: knowledgeId,
-        type: typeQuestion,
-        answer: {
-          not: null,
-        },
-        score: {
-          not: null,
-        },
-        explain: {
-          not: null,
-        },
-        ...(typeQuestion === TypeQuestion.theory && {
-          aiFeedback: {
-            not: null,
-          },
-        }),
-      },
-      select: {
-        content: true,
-        answer: true,
-        aiFeedback: true,
-      },
-    });
-
-    const prompt = generateQuestionPrompt(
-      knowledge,
-      historyQuestion,
-      typeQuestion,
-    );
-
-    const response = await this.geminiService.generateText({
-      prompt,
-      maxTokens: this.envService.get('GEMINI_MAX_TOKEN'),
-      temperature: this.envService.get('GEMINI_TEMPERATURE'),
-    });
-    const question = response.text;
-
-    const questionCreated = await this.prisma.question.create({
-      data: {
-        content: question,
-        knowledgeId: knowledgeId,
-        type: typeQuestion,
-      },
-    });
-    return questionCreated;
+  if (!question) {
+    throw new BadRequestException('No unanswered question found');
   }
+
+  return question; // sẽ trả về JSON object chi tiết như createQuestion
+}
+
+
+async createQuestion(
+  knowledgeId: string,
+  userId: string,
+  typeQuestion: TypeQuestion,
+): Promise<any> {
+  // Lấy thông tin kiến thức
+  const knowledge = await this.getKnowledge(knowledgeId, userId);
+
+  // Kiểm tra xem đã có câu hỏi chưa trả lời cùng knowledgeId & typeQuestion chưa
+  const existingUnanswered = await this.prisma.question.findFirst({
+    where: {
+      knowledgeId,
+      type: typeQuestion,
+      answer: null,
+      knowledge: {
+        topic: {
+          class: {
+            user: { id: userId },
+          },
+        },
+      },
+    },
+  });
+
+  if (existingUnanswered) {
+    throw new BadRequestException(
+      'There is already an unanswered question for this knowledge and type',
+    );
+  }
+
+  // Lấy lịch sử các câu hỏi đã trả lời để truyền vào prompt
+  const historyQuestion = await this.prisma.question.findMany({
+    where: {
+      knowledgeId,
+      type: typeQuestion,
+      answer: { not: null },
+      score: { not: null },
+      explain: { not: null },
+      ...(typeQuestion === TypeQuestion.theory && {
+        aiFeedback: { not: null },
+      }),
+    },
+    select: {
+      content: true,
+      answer: true,
+      aiFeedback: true,
+    },
+  });
+
+  // Sinh prompt để tạo câu hỏi mới
+  const prompt = generateQuestionPrompt(
+    knowledge,
+    historyQuestion,
+    typeQuestion,
+  );
+
+  // Gọi Gemini API
+  const response = await this.geminiService.generateText({
+    prompt,
+    maxTokens: this.envService.get('GEMINI_MAX_TOKEN'),
+    temperature: this.envService.get('GEMINI_TEMPERATURE'),
+  });
+  const questionText = response.text;
+
+  // Lưu câu hỏi mới
+  const questionCreated = await this.prisma.question.create({
+    data: {
+      content: questionText,
+      knowledgeId,
+      type: typeQuestion,
+    },
+  });
+
+  return questionCreated;
+}
+
 
   async getQuestionNotAnswer(userId: string): Promise<any> {
     const questions = await this.prisma.question.findFirst({

@@ -41,4 +41,23 @@ export class QuestionsController {
   ): Promise<any> {
     return this.questionsService.answerQuestion(questionId, body, user);
   }
+
+
+  @ApiOperation({ summary: 'Get latest unanswered question by knowledge and type' })
+@ApiParam({ name: 'knowledgeId', description: 'ID of the knowledge', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
+@ApiParam({ name: 'typeQuestion', description: 'theory || practice', example: 'theory' })
+@Get('knowledge/:knowledgeId/latest-unanswered/:typeQuestion')
+async getLatestUnansweredQuestion(
+  @Param('knowledgeId') knowledgeId: string,
+  @Param('typeQuestion', new ParseEnumPipe(TypeQuestion)) typeQuestion: TypeQuestion,
+  @CurrentUser() user: User
+): Promise<any> {
+  return this.questionsService.getLatestUnansweredQuestionByKnowledge(
+    knowledgeId,
+    typeQuestion,
+    user.id,
+  );
+}
+
+
 }
