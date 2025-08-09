@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTopicDto } from './dto/create-topic.dto';
-import { Class, PrismaClient, Topic } from '@prisma/client';
+import { Class, PrismaClient, Status, Topic } from '@prisma/client';
 import { EditTopicDto } from './dto/edit-topic.dto';
 import { GeminiService } from '../gemini/gemini.service';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
@@ -13,6 +13,27 @@ export class TopicsService {
     private readonly geminiService: GeminiService,
     private readonly prisma: PrismaService,
   ) {}
+
+
+  async updateTopicStatus(
+    topicId: string,
+    status: Status,
+    userId: string,
+  ): Promise<Topic> {
+    const topic = await this.prisma.topic.update({
+      where: {
+        id: topicId,
+        class: { userId: userId },
+        deleted: false,
+      },
+      data: {
+        status: status,
+      },
+    });
+
+    return topic;
+  }
+
 
   async getTopic(topicId: string, userId: string): Promise<ResponseTopicDto> {
     return this.checkTopicBelongToUser(topicId, userId);

@@ -8,6 +8,7 @@ import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse} from '@ne
 import { ClerkAuthGuard } from 'src/common/guards/clerk-auth.guard';
 import { ResponseTopicDto } from './dto/respone-topic.dto';
 
+import { UpdateTopicStatusDto } from './dto/update-topic-status.dto';
 
 @ApiBearerAuth()
 @Controller('topics')
@@ -88,4 +89,17 @@ export class TopicsController {
   ): Promise<Topic> {
     return this.topicsService.deleteTopic(topicId, user.id);
   }
+
+  // PATCH: /topics/:id/status
+  @ApiOperation({ summary: 'Update status of a topic' })
+  @ApiParam({ name: 'id', description: 'ID of the topic', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
+  @Patch(':id/status')
+  async updateStatus(
+    @Param('id') topicId: string,
+    @Body() updateStatusDto: UpdateTopicStatusDto,
+    @CurrentUser() user: User
+  ): Promise<Topic> {
+    return this.topicsService.updateTopicStatus(topicId, updateStatusDto.status, user.id);
+  }
+
 }
