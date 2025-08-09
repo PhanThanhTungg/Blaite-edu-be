@@ -16,7 +16,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { ClerkAuthGuard } from './common/guards/clerk-auth.guard';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { TelegramModule } from './modules/bot/telegram/telegram.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleModule as ScheduleModule2 } from './modules/schedule/schedule.module';
 
 @Module({
   imports: [
@@ -37,6 +40,7 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     TopicsModule,
     KnowledgesModule,
@@ -46,12 +50,16 @@ import { DashboardModule } from './modules/dashboard/dashboard.module';
     ClerkModule,
     UsersModule,
     AuthModule,
+    TelegramModule,
     DashboardModule,
+    ScheduleModule2,
+    ScheduleModule,
   ],
   controllers: [AppController],
   providers: [AppService, ClerkClientProvider, {
     provide: APP_GUARD,
     useClass: ClerkAuthGuard,
-  }],
+  }
+],
 })
 export class AppModule {}

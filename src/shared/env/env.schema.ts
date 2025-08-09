@@ -32,4 +32,10 @@ export class EnvSchema {
   @IsNumber()
   @Min(1)
   GEMINI_MAX_TOKEN: number
+
+  @IsString()
+  TELE_BOT_TOKEN: string
+
+  @IsString()
+  DEPLOY_URL: string
 }

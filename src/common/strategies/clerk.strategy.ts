@@ -39,7 +39,7 @@ export class ClerkStrategy extends PassportStrategy(Strategy, 'clerk') {
       });
 
       const user = await this.clerkClient.users.getUser(tokenPayload.sub);
-      const userInfo = await this.usersService.getUserInfo(user.id );
+      const userInfo = await this.usersService.getUserInfo(user.id);
       return userInfo;
     } catch (error) {
       console.error(error);

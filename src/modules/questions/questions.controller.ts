@@ -26,12 +26,6 @@ export class QuestionsController {
   }
 
 
-  // @ApiOperation({ summary: 'Get a question not answer' })
-  // @Get('not-answer')
-  // async getQuestionNotAnswer(@CurrentUser() user: User): Promise<any> {
-  //   return this.questionsService.getQuestionNotAnswer(user.id);
-  // }
-
   @ApiOperation({ summary: 'Answer a question' })
   @Post('answer/:id')
   async answerQuestion(
