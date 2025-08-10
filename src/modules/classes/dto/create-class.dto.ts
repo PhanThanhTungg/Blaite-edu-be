@@ -1,10 +1,9 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export enum ClassStatus {
-  PRIVATE = 'private',
-  PROTECTED = 'protected',
-  PUBLIC = 'public'
+export enum Status {
+  active = 'active',
+  inactive = 'inactive',
 }
 
 export class CreateClassDto {
@@ -24,12 +23,12 @@ export class CreateClassDto {
   })
   prompt: string;
 
-  @IsEnum(ClassStatus, { message: 'Status must be a valid class status' })
+  @IsEnum(Status, { message: 'Status must be a valid class status' })
   @IsOptional({ message: 'Status is required' })
   @ApiProperty({
     description: 'The status of the class',
-    example: ClassStatus.PRIVATE,
+    example: Status.active,
     required: false,
   })
-  status: ClassStatus;
+  status: Status;
 }

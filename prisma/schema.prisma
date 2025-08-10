@@ -59,7 +59,7 @@ model Class {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   prompt    String
-  status    StatusClass @default(private)
+  status    Status  @default(active)
   deleted   Boolean     @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -100,7 +100,7 @@ model Knowledge {
   status    Status     @default(active)
   createdAt DateTime   @default(now()) 
   updatedAt DateTime   @updatedAt 
-  questions Question[]
+  questions Question[]  
   @@map("knowledges")
 }
 
@@ -113,7 +113,7 @@ model Question {
   aiFeedback  String?
   knowledgeId String
   type        TypeQuestion
-  knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id])
+  knowledge   Knowledge  @relation(fields: [knowledgeId], references: [id], onDelete: Cascade)
   deleted     Boolean    @default(false)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt

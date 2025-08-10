@@ -42,6 +42,11 @@ export class KnowledgesService {
 
   async generateKnowledge(topicId: string, userId: string, maxTokens: number, temperature: number): Promise<any> {
     const topic:Topic = await this.checkKnowledgesUser(userId, topicId);
+
+    await this.prisma.knowledge.deleteMany({
+      where: { topicId: topicId }
+    });
+
     const prompt = generateKnowledgePrompt(topic, maxTokens);
 
     const response = await this.geminiService.generateText({
