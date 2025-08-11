@@ -18,7 +18,7 @@ export class CreateKnowledgeDto{
     description: "Content of the knowledge",
     example: "Tôi muốn học từ vựng tiếng anh sơ cấp toeic",
   })
-  content: string;
+  prompt: string;
 
   @IsString({ message: "Parent ID must be a string" })
   @IsOptional()
