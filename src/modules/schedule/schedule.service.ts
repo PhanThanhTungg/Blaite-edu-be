@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { User } from '@prisma/client';
+import { TypeQuestion, User } from '@prisma/client';
 import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { TelegramService } from '../bot/telegram/telegram.service';
 import { QuestionsService } from '../questions/questions.service';
 import { EnvService } from 'src/shared/env/env.service';
+import { TypeQuestionEnum } from './dto/change-type-question.dto';
 
 @Injectable()
 export class ScheduleService {
@@ -92,6 +93,17 @@ export class ScheduleService {
       },
       data: {
         scheduleKnowledgesId: knowledgeId,
+      },
+    });
+  }
+
+  async scheduleTypeQuestion(typeQuestion: TypeQuestionEnum, userId: string) {
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        scheduleTypeQuestion: typeQuestion,
       },
     });
   }
