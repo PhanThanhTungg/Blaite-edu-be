@@ -7,14 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum LevelClass {
-  beginner
-  elementary
-  intermediate
-  upper_intermediate
-  advanced
-}
-
 enum StatusClass {
   private
   protected

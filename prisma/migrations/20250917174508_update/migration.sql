@@ -1,6 +1,7 @@
 /*
   Warnings:
 
+  - You are about to drop the column `avgScore` on the `knowledges` table. All the data in the column will be lost.
   - You are about to drop the column `content` on the `knowledges` table. All the data in the column will be lost.
   - You are about to drop the column `messageId` on the `questions` table. All the data in the column will be lost.
   - You are about to drop the column `topicId` on the `questions` table. All the data in the column will be lost.
@@ -8,27 +9,33 @@
   - You are about to drop the column `description` on the `topics` table. All the data in the column will be lost.
   - You are about to drop the column `updated_at` on the `topics` table. All the data in the column will be lost.
   - You are about to drop the column `userId` on the `topics` table. All the data in the column will be lost.
+  - You are about to drop the column `avatarUrl` on the `users` table. All the data in the column will be lost.
   - You are about to drop the column `clerkUserId` on the `users` table. All the data in the column will be lost.
+  - You are about to drop the column `email` on the `users` table. All the data in the column will be lost.
+  - You are about to drop the column `name` on the `users` table. All the data in the column will be lost.
+  - You are about to drop the column `phone` on the `users` table. All the data in the column will be lost.
   - You are about to drop the `admins` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `permissions` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `role_permissions` table. If the table is not empty, all the data it contains will be lost.
   - You are about to drop the `roles` table. If the table is not empty, all the data it contains will be lost.
-  - A unique constraint covering the columns `[googleId]` on the table `users` will be added. If there are existing duplicate values, this will fail.
-  - A unique constraint covering the columns `[facebookId]` on the table `users` will be added. If there are existing duplicate values, this will fail.
+  - A unique constraint covering the columns `[clerkId]` on the table `users` will be added. If there are existing duplicate values, this will fail.
   - Added the required column `name` to the `knowledges` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `type` to the `questions` table without a default value. This is not possible if the table is not empty.
   - Made the column `knowledgeId` on table `questions` required. This step will fail if there are existing NULL values in that column.
   - Added the required column `classId` to the `topics` table without a default value. This is not possible if the table is not empty.
   - Added the required column `updatedAt` to the `topics` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `clerkId` to the `users` table without a default value. This is not possible if the table is not empty.
+  - Made the column `streak` on table `users` required. This step will fail if there are existing NULL values in that column.
 
 */
 -- CreateEnum
-CREATE TYPE "TypeAuth" AS ENUM ('account', 'google', 'facebook');
-
--- CreateEnum
-CREATE TYPE "LevelClass" AS ENUM ('beginner', 'elementary', 'intermediate', 'upper_intermediate', 'advanced');
-
--- CreateEnum
 CREATE TYPE "StatusClass" AS ENUM ('private', 'protected', 'public');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('active', 'inactive');
+
+-- CreateEnum
+CREATE TYPE "TypeQuestion" AS ENUM ('theory', 'practice');
 
 -- DropForeignKey
 ALTER TABLE "admins" DROP CONSTRAINT "admins_roleId_fkey";
@@ -51,15 +58,20 @@ ALTER TABLE "topics" DROP CONSTRAINT "topics_userId_fkey";
 -- DropIndex
 DROP INDEX "users_clerkUserId_key";
 
--- AlterTable
-ALTER TABLE "activities" ALTER COLUMN "timezone" SET DEFAULT 'UTC';
+-- DropIndex
+DROP INDEX "users_email_key";
 
 -- AlterTable
-ALTER TABLE "knowledges" DROP COLUMN "content",
+ALTER TABLE "activities" ALTER COLUMN "date" SET DATA TYPE TEXT;
+
+-- AlterTable
+ALTER TABLE "knowledges" DROP COLUMN "avgScore",
+DROP COLUMN "content",
 ADD COLUMN     "deleted" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "name" TEXT NOT NULL,
 ADD COLUMN     "parentId" TEXT,
 ADD COLUMN     "prompt" TEXT NOT NULL DEFAULT 'Không có mô tả',
+ADD COLUMN     "status" "Status" NOT NULL DEFAULT 'active',
 ADD COLUMN     "theory" TEXT;
 
 -- AlterTable
@@ -67,6 +79,7 @@ ALTER TABLE "questions" DROP COLUMN "messageId",
 DROP COLUMN "topicId",
 ADD COLUMN     "deleted" BOOLEAN NOT NULL DEFAULT false,
 ADD COLUMN     "explain" TEXT,
+ADD COLUMN     "type" "TypeQuestion" NOT NULL,
 ALTER COLUMN "knowledgeId" SET NOT NULL;
 
 -- AlterTable
@@ -77,16 +90,22 @@ DROP COLUMN "userId",
 ADD COLUMN     "classId" TEXT NOT NULL,
 ADD COLUMN     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 ADD COLUMN     "deleted" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "status" "Status" NOT NULL DEFAULT 'active',
 ADD COLUMN     "updatedAt" TIMESTAMP(3) NOT NULL,
 ALTER COLUMN "prompt" SET DEFAULT 'Không có mô tả';
 
 -- AlterTable
-ALTER TABLE "users" DROP COLUMN "clerkUserId",
-ADD COLUMN     "facebookId" TEXT,
-ADD COLUMN     "googleId" TEXT,
-ADD COLUMN     "password" TEXT,
-ADD COLUMN     "typeAuth" "TypeAuth" NOT NULL DEFAULT 'account',
-ALTER COLUMN "timezone" SET DEFAULT 'UTC';
+ALTER TABLE "users" DROP COLUMN "avatarUrl",
+DROP COLUMN "clerkUserId",
+DROP COLUMN "email",
+DROP COLUMN "name",
+DROP COLUMN "phone",
+ADD COLUMN     "clerkId" TEXT NOT NULL,
+ADD COLUMN     "intervalSendMessage" INTEGER,
+ADD COLUMN     "longestStreak" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "scheduleKnowledgesId" TEXT,
+ADD COLUMN     "scheduleTypeQuestion" "TypeQuestion",
+ALTER COLUMN "streak" SET NOT NULL;
 
 -- DropTable
 DROP TABLE "admins";
@@ -106,7 +125,7 @@ CREATE TABLE "classes" (
     "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "prompt" TEXT NOT NULL,
-    "status" "StatusClass" NOT NULL DEFAULT 'private',
+    "status" "Status" NOT NULL DEFAULT 'active',
     "deleted" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -115,10 +134,10 @@ CREATE TABLE "classes" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_googleId_key" ON "users"("googleId");
+CREATE UNIQUE INDEX "users_clerkId_key" ON "users"("clerkId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "users_facebookId_key" ON "users"("facebookId");
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_scheduleKnowledgesId_fkey" FOREIGN KEY ("scheduleKnowledgesId") REFERENCES "knowledges"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "classes" ADD CONSTRAINT "classes_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -130,4 +149,4 @@ ALTER TABLE "topics" ADD CONSTRAINT "topics_classId_fkey" FOREIGN KEY ("classId"
 ALTER TABLE "knowledges" ADD CONSTRAINT "knowledges_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "knowledges"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "questions" ADD CONSTRAINT "questions_knowledgeId_fkey" FOREIGN KEY ("knowledgeId") REFERENCES "knowledges"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "questions" ADD CONSTRAINT "questions_knowledgeId_fkey" FOREIGN KEY ("knowledgeId") REFERENCES "knowledges"("id") ON DELETE CASCADE ON UPDATE CASCADE;
