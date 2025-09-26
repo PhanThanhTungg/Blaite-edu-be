@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { QuestionsService } from 'src/modules/questions/questions.service';
 import { UsersService } from 'src/modules/users/users.service';
 import { EnvService } from 'src/shared/env/env.service';
@@ -21,10 +20,6 @@ export class TelegramService {
     });
     let url = envService.get('DEPLOY_URL');
     this.bot.setWebHook(`${envService.get('DEPLOY_URL')}/telegram/webhook`);
-    // this.bot.on('message', (msg) => {
-    //   console.log('Received message:', msg);
-    //   this.handleUpdate(msg);
-    // });
   }
 
   async handleUpdate(message: any) {
@@ -39,38 +34,36 @@ export class TelegramService {
             await this.usersService.setTelegramId(checkUser.id, chatId + '');
             this.bot.sendMessage(
               chatId,
-              `<b>Kết nối thành công!</b>\n\n` +
+              `<b>Connected successfully!</b>\n\n` +
                 `<b>ID:</b> <code>${checkUser.id}</code>\n`,
               { parse_mode: 'HTML' },
             );
           } else {
-            this.bot.sendMessage(chatId, `Không tìm thấy tài khoản`);
+            this.bot.sendMessage(chatId, `🚫 <code>account not found</code>`);
           }
         } else {
+          const user= await this.prisma.user.findUnique({
+            where: {
+              telegramId: chatId + '',
+            },
+          });
+          if(!user) {
+            this.bot.sendMessage(chatId, `🚫 <code>you are not connected to the account</code>`);
+            return;
+          }
           const reply = message.reply_to_message;
           if (!reply) {
             this.bot.sendMessage(
               chatId,
-              'Vui lòng trả lời một câu hỏi, không nhắn tin tự do',
+              '🚫 <code>please answer a question, do not send free messages</code>',
             );
           } else {
             const questionId = reply.text.split('\n').pop(); // dòng cuối cùng là id
-            const user: any = await this.prisma.user.findUnique({
-              where: {
-                telegramId: chatId + '',
-              },
-            });
-            if (!user)
-              this.bot.sendMessage(
-                chatId,
-                'Vui lòng nhập /start để kết nối tài khoản',
-              );
             const question = await this.questionsService.getQuestion(
               questionId,
               user.id,
             );
-            if (!question)
-              this.bot.sendMessage(chatId, 'Câu hỏi không tồn tại');
+            if (!question) this.bot.sendMessage(chatId, '🚫 <code>question not found</code>');
             const questionAnswered = await this.questionsService.answerQuestion(
               questionId,
               { answer: text },
@@ -85,15 +78,13 @@ export class TelegramService {
           }
         }
       } catch (error) {
-        console.log(error);
-        this.bot.sendMessage(chatId, `Lỗi: ${error.message}`);
+        this.bot.sendMessage(chatId, `🚫 <code>error: ${error.message}</code>`);
       }
     }
   }
 
   async sendMessage(chatId: string, message: string) {
     try {
-      console.log(chatId, message);
       await this.bot.sendMessage(chatId, message, { parse_mode: 'HTML' });
     } catch (error) {
       console.log(error);

@@ -33,7 +33,21 @@ export class ScheduleService {
     for (const user of users) {
       if (user.telegramId) {
         const knowledgeId = user.scheduleKnowledgesId;
+        if(!knowledgeId) {
+          this.telegramService.sendMessage(
+            user.telegramId,
+            '🚫 <code>you have not set the knowledge</code>',
+          );
+          continue;
+        }
         const typeQuestion = user.scheduleTypeQuestion;
+        if(!typeQuestion) {
+          this.telegramService.sendMessage(
+            user.telegramId,
+            '🚫 <code>you have not set the type question</code>',
+          );
+          continue;
+        }
         try {
           const question = await this.questionsService.createQuestion(
             knowledgeId,
@@ -42,7 +56,7 @@ export class ScheduleService {
           );
           this.telegramService.sendMessage(
             user.telegramId,
-            `<b>Câu hỏi:</b> ${question.content}\n` +
+            `<b>Question:</b> ${question.content}\n` +
               `<code>${question.id}</code>`,
           );
         } catch (error) {
@@ -50,12 +64,12 @@ export class ScheduleService {
           if (error?.response?.message === 'There is already an unanswered question for this knowledge and type')
             this.telegramService.sendMessage(
               user.telegramId,
-              'Bạn có câu hỏi chưa trả lời, vui lòng trả lời câu hỏi trước khi nhận câu hỏi mới',
+              '🚫 <code> you have not answer the question, please answer the question before receiving a new question</code>',
             );
           else
             this.telegramService.sendMessage(
               user.telegramId,
-              'Có lỗi xảy ra, tạm thời không thể gửi câu hỏi',
+              '🚫 <code> an error occurred, temporarily unable to send questions</code>',
             );
         }
       }
