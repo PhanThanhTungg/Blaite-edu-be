@@ -36,7 +36,7 @@ model User {
   intervalSendMessage Int?
   scheduleKnowledgesId String?
   scheduleTypeQuestion TypeQuestion?
-  scheduleKnowledges Knowledge? @relation(fields: [scheduleKnowledgesId], references: [id])
+  scheduleKnowledges Knowledge? @relation(fields: [scheduleKnowledgesId], references: [id] , onDelete: Cascade)
   streak         Int        @default(0)
   longestStreak  Int        @default(0)
   lastActiveDate DateTime?
@@ -82,7 +82,7 @@ model Knowledge {
   parent    Knowledge?  @relation("KnowledgeParent", fields: [parentId], references: [id], onDelete: Cascade)
   children  Knowledge[] @relation("KnowledgeParent")
   topicId   String
-  topic     Topic      @relation(fields: [topicId], references: [id])
+  topic     Topic      @relation(fields: [topicId], references: [id] , onDelete: Cascade)
   name      String
   prompt    String     @default("Không có mô tả")
   theory    String?
@@ -116,7 +116,7 @@ model Question {
 model Activity {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id] , onDelete: Cascade)
   date      String
   timezone  String   @default("Asia/Ho_Chi_Minh")
   count     Int
