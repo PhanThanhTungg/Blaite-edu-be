@@ -6,7 +6,7 @@ import { ChatRequestDto, ChatResponseDto, GenerateTextRequestDto, GenerateTextRe
 @Injectable()
 export class GeminiService {
   private genAI: GoogleGenerativeAI;
-  private defaultModel: string = 'gemini-2.0-flash';
+  private defaultModel: string = 'gemini-2.0-flash-lite';
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('GEMINI_API_KEY');

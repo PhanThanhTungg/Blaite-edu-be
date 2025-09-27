@@ -3,7 +3,13 @@ import { PrismaService } from 'src/shared/prisma/prisma.service';
 import { GeminiService } from '../gemini/gemini.service';
 import { EnvService } from 'src/shared/env/env.service';
 import { AnswerQuestionDto } from './dto/answer-question.dto';
-import { Prisma, PrismaClient, Question, TypeQuestion, User } from '@prisma/client';
+import {
+  Prisma,
+  PrismaClient,
+  Question,
+  TypeQuestion,
+  User,
+} from '@prisma/client';
 import { generateQuestionPrompt } from 'src/assets/prompts/questions/generate-question.prompt';
 import { answerQuestionPrompt } from 'src/assets/prompts/questions/answer-question.prompt';
 
@@ -13,30 +19,27 @@ export class QuestionsService {
     private readonly prisma: PrismaService,
     private readonly geminiService: GeminiService,
     private readonly envService: EnvService,
-  ) { }
+  ) {}
 
-
-  async getLatestUnansweredQuestionByKnowledge(
-    knowledgeId: string,
-    typeQuestion: TypeQuestion,
-    userId: string
+  async getLatestUnansweredQuestionByTopic(
+    topicId: string,
+    userId: string,
   ): Promise<any> {
     const question = await this.prisma.question.findFirst({
       where: {
-        knowledgeId,
-        type: typeQuestion,
         answer: null,
         knowledge: {
+          topicId,
           topic: {
             class: {
-              user: { id: userId }
+              user: { id: userId },
             },
           },
         },
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: 'desc',
+      },
     });
 
     if (!question) {
@@ -50,14 +53,13 @@ export class QuestionsService {
     knowledgeId: string,
     userId: string,
     typeQuestion: TypeQuestion,
-    prismaClient: PrismaClient | Prisma.TransactionClient = this.prisma
+    prismaClient: PrismaClient | Prisma.TransactionClient = this.prisma,
   ): Promise<any> {
     const knowledge = await this.getKnowledge(knowledgeId, userId);
 
     const existingUnanswered = await prismaClient.question.findFirst({
       where: {
         knowledgeId,
-        type: typeQuestion,
         answer: null,
         knowledge: {
           topic: {
@@ -66,19 +68,18 @@ export class QuestionsService {
             },
           },
         },
-      }
+      },
     });
 
     if (existingUnanswered) {
       throw new BadRequestException(
-        'There is already an unanswered question for this knowledge and type',
+        'There is already an unanswered question for this knowledge',
       );
     }
 
     const historyQuestion = await this.prisma.question.findMany({
       where: {
         knowledgeId,
-        type: typeQuestion,
         answer: { not: null },
         score: { not: null },
         explain: { not: null },
@@ -116,25 +117,6 @@ export class QuestionsService {
 
     return questionCreated;
   }
-
-
-  // async getQuestionNotAnswer(userId: string): Promise<any> {
-  //   const questions = await this.prisma.question.findFirst({
-  //     where: {
-  //       knowledge: {
-  //         topic: {
-  //           class: {
-  //             user: {
-  //               id: userId,
-  //             },
-  //           },
-  //         },
-  //       },
-  //       answer: null,
-  //     },
-  //   });
-  //   return questions;
-  // }
 
   async answerQuestion(
     questionId: string,
@@ -174,10 +156,37 @@ export class QuestionsService {
     });
   }
 
+  async getQuestionsOfKnowledge(
+    knowledgeId: string,
+    userId: string,
+    typeQuestion: TypeQuestion,
+  ): Promise<any> {
+    const questions = await this.prisma.question.findMany({
+      where: {
+        knowledgeId,
+        type: typeQuestion,
+        knowledge: {
+          topic: {
+            class: {
+              user: { id: userId },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    if (!questions) {
+      throw new BadRequestException('No questions found');
+    }
+    return questions;
+  }
+
   private async getKnowledge(
     knowledgeId: string,
     userId: string,
-    prismaClient: PrismaClient | Prisma.TransactionClient = this.prisma
+    prismaClient: PrismaClient | Prisma.TransactionClient = this.prisma,
   ): Promise<any> {
     const knowledge = await prismaClient.knowledge.findUnique({
       where: {
@@ -201,7 +210,6 @@ export class QuestionsService {
     });
     return knowledge;
   }
-
 
   async getQuestion(questionId: string, userId: string): Promise<any> {
     const question = await this.prisma.question.findUnique({

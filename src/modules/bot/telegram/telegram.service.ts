@@ -32,14 +32,13 @@ export class TelegramService {
           const checkUser = await this.usersService.checkUserById(userId);
           if (checkUser) {
             await this.usersService.setTelegramId(checkUser.id, chatId + '');
-            this.bot.sendMessage(
+            this.sendMessage(
               chatId,
               `<b>Connected successfully!</b>\n\n` +
                 `<b>ID:</b> <code>${checkUser.id}</code>\n`,
-              { parse_mode: 'HTML' },
             );
           } else {
-            this.bot.sendMessage(chatId, `🚫 <code>account not found</code>`);
+            this.sendMessage(chatId, `🚫 <code>account not found</code>`);
           }
         } else {
           const user= await this.prisma.user.findUnique({
@@ -48,12 +47,12 @@ export class TelegramService {
             },
           });
           if(!user) {
-            this.bot.sendMessage(chatId, `🚫 <code>you are not connected to the account</code>`);
+            this.sendMessage(chatId, `🚫 <code>you are not connected to the account</code>`);
             return;
           }
           const reply = message.reply_to_message;
           if (!reply) {
-            this.bot.sendMessage(
+            this.sendMessage(
               chatId,
               '🚫 <code>please answer a question, do not send free messages</code>',
             );
@@ -63,22 +62,21 @@ export class TelegramService {
               questionId,
               user.id,
             );
-            if (!question) this.bot.sendMessage(chatId, '🚫 <code>question not found</code>');
+            if (!question) this.sendMessage(chatId, '🚫 <code>question not found</code>');
             const questionAnswered = await this.questionsService.answerQuestion(
               questionId,
               { answer: text },
               user,
             );
-             this.bot.sendMessage(
+             this.sendMessage(
               chatId,
               `<b>Điểm:</b> ${questionAnswered.score}\n <b>Giải thích:</b> ${questionAnswered.explain}\n` +
                 `<b>AI Feedback:</b> ${questionAnswered.aiFeedback}`,
-              { parse_mode: 'HTML' },
             );
           }
         }
       } catch (error) {
-        this.bot.sendMessage(chatId, `🚫 <code>error: ${error.message}</code>`);
+        this.sendMessage(chatId, `🚫 <code>error: ${error.message}</code>`);
       }
     }
   }

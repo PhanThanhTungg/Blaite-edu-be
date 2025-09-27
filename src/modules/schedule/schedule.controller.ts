@@ -40,6 +40,7 @@ export class ScheduleController {
     @Body() changeTypeQuestionDto: ChangeTypeQuestionDto,
     @CurrentUser() user,
   ) {
+    console.log('changeTypeQuestionDto', changeTypeQuestionDto);
     return this.scheduleService.scheduleTypeQuestion(changeTypeQuestionDto.typeQuestion, user.id);
   }
 }

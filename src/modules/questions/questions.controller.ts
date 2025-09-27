@@ -37,21 +37,29 @@ export class QuestionsController {
   }
 
 
-  @ApiOperation({ summary: 'Get latest unanswered question by knowledge and type' })
-  @ApiParam({ name: 'knowledgeId', description: 'ID of the knowledge', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
-  @ApiParam({ name: 'typeQuestion', description: 'theory || practice', example: 'theory' })
-  @Get('knowledge/:knowledgeId/latest-unanswered/:typeQuestion')
+  @ApiOperation({ summary: 'Get latest unanswered question' })
+  @ApiParam({ name: 'topicId', description: 'ID of the topic', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
+  @Get('topic/:topicId/latest-unanswered')
   async getLatestUnansweredQuestion(
-    @Param('knowledgeId') knowledgeId: string,
-    @Param('typeQuestion', new ParseEnumPipe(TypeQuestion)) typeQuestion: TypeQuestion,
+    @Param('topicId') topicId: string,
     @CurrentUser() user: User
   ): Promise<any> {
-    return this.questionsService.getLatestUnansweredQuestionByKnowledge(
-      knowledgeId,
-      typeQuestion,
+    return this.questionsService.getLatestUnansweredQuestionByTopic(
+      topicId,
       user.id,
     );
   }
 
+  @ApiOperation({ summary: 'Get questions of a knowledge' })
+  @ApiParam({ name: 'knowledgeId', description: 'ID of the knowledge', example: '3f92a5df-09d9-4ae1-ab99-421c7da12ac9' })
+  @ApiParam({ name: 'typeQuestion', description: 'theory || practice', example: 'theory' })
+  @Get('knowledge/:knowledgeId/:typeQuestion')
+  async getQuestionsOfKnowledge(
+    @Param('knowledgeId') knowledgeId: string,
+    @Param('typeQuestion', new ParseEnumPipe(TypeQuestion)) typeQuestion: TypeQuestion,
+    @CurrentUser() user: User
+  ): Promise<any> {
+    return this.questionsService.getQuestionsOfKnowledge(knowledgeId, user.id, typeQuestion);
+  }
 
 }
