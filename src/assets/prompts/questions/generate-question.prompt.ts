@@ -23,6 +23,8 @@ export const generateQuestionPrompt = (knowledge: Knowledge, historyQuestion: an
     Dựa vào những thông tin trên, hãy tạo ra đúng 1 câu hỏi phù hợp đáp ứng việc học tập hiệu quả của học sinh
     Nếu bạn cảm thấy học sinh cần cải thiện phần nào hãy đặt câu hỏi để học sinh cải thiện phần đó
     Nếu bạn cảm thấy học sinh cần bổ sung phần nào hãy đặt câu hỏi để bổ sung phần đó. 
+    Đặc biệt, câu hỏi phải nằm trong phạm vi học sinh có thể trả lời bằng text và bạn có thể chấm được được
+    Câu hỏi không chứa các dạng như hình, video, âm thanh, ...
     ${subTask}
 
     YÊU CẦU ĐẦU RA:
