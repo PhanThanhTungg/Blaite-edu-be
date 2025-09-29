@@ -4,6 +4,8 @@
 
 ## Mô tả dự án
 
+Source code frontend: <a href="https://github.com/PhanThanhTungg/Blaite-edu-fe" target="blank">github</a>
+
 Astudy (Blaite Edu Backend) là dịch vụ backend xây dựng bằng NestJS cho hệ thống học tập chủ động, tập trung vào:
 
 - Quản lý người dùng, lớp học, chủ đề, kiến thức
